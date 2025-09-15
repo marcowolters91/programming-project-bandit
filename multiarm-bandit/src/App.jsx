@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import hsosLogo from './assets/hsos.png'
+import  "./App.css"
 
 export default function App() {
   return (
@@ -11,8 +12,12 @@ export default function App() {
       </header>
 
       <main className="main">
-        <Link to="/bernoulli-bandit" className="btn">Methode 1</Link>
-        <Link to="/methode-2" className="btn btn-secondary">Methode 2</Link>
+        <Link to="/bernoulli-bandit" className="btn">
+            <button className="btn">Bernoulli-Bandit</button>
+        </Link>
+        <Link to="/methode-2" className="btn btn-secondary">
+            <button className="btn">Methode 2</button>
+        </Link>
       </main>
     </div>
   )

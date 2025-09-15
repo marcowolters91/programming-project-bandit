@@ -1,0 +1,20 @@
+button {
+  margin: 0.5rem;
+  padding: 0.6em 1.2em;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #1a1a1a;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #4caf50;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

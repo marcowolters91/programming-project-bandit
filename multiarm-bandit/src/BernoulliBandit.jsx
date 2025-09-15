@@ -1,16 +1,16 @@
 import { useState } from "react";
 import BernoulliBandit from "./BernoulliBandit";
 import "./BernoulliBandit.css";
-import banditImage from "./bandit.png"; // Bild im Ordner src/assets ablegen
-import App from "./App";
+import banditImage from "./bandit.png"; 
+import { Link } from 'react-router-dom'
 
 const bandit = new BernoulliBandit([0.2, 0.5, 0.6, 0.8]);
 
 export default function BernoulliBandit_App() {
   const [history, setHistory] = useState([]);
-  const [maxTurns, setMaxTurns] = useState(""); // leer = unbegrenzt
+  const [maxTurns, setMaxTurns] = useState("");
   const [turns, setTurns] = useState(0);
-  const [locked, setLocked] = useState(false); // sperrt die Eingabe nach erstem Zug
+  const [locked, setLocked] = useState(false); 
 
   const handlePull = (armIndex) => {
     if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) {
@@ -38,16 +38,16 @@ export default function BernoulliBandit_App() {
 
   const setUnlimitedTurns = () => {
     if (!locked) {
-      setMaxTurns(""); // leer = unbegrenzt
+      setMaxTurns(""); 
     }
   };
 
   const handleMaxTurnsChange = (e) => {
     const value = e.target.value;
     if (value === "") {
-      setMaxTurns(""); // unbegrenzt
+      setMaxTurns(""); 
     } else {
-      const num = Math.max(0, parseInt(value, 10)); // keine negativen Werte
+      const num = Math.max(0, parseInt(value, 10)); 
       setMaxTurns(num);
     }
   };
@@ -107,6 +107,11 @@ export default function BernoulliBandit_App() {
           </li>
         ))}
       </ul>
+      <div>
+        <Link to="/">
+              <button className="btn">Zurück</button>
+        </Link>
+      </div>
     </>
   );
 }
