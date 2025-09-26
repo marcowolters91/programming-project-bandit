@@ -1,0 +1,120 @@
+:root {
+  --gap: 1rem;
+  --border: #ddd;
+  --radius: 12px;
+  --muted: #666;
+  --bg: #fff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: system-ui, sans-serif;
+  color: #111;
+}
+
+#root {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.bandit-logo {
+  height: 8em;
+  padding: 1em;
+  transition: filter 300ms, box-shadow 300ms;
+  will-change: filter, box-shadow;
+}
+
+.bandit-logo:hover {
+  filter: drop-shadow(0 0 2em #4caf50aa);
+}
+
+button {
+  margin: 0.5rem;
+  padding: 0.6em 1.2em;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover { border-color: #4caf50; }
+button:disabled { opacity: .6; cursor: not-allowed; }
+
+.reset-btn {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.reset-btn:hover { background-color: #d32f2f; }
+
+.turns-input {
+  margin: 1rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.turns-input input {
+  width: 80px;
+  padding: 0.3em;
+}
+
+.layout {
+  display: grid;
+  grid-template-areas:
+    "header"
+    "nav"
+    "main"
+    "footer";
+  grid-template-rows: auto auto 1fr auto;
+  gap: var(--gap);
+}
+
+.header { grid-area: header; }
+.nav    { grid-area: nav; }
+.main   { grid-area: main; }
+.footer { grid-area: footer; color: var(--muted); }
+
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: left;
+}
+
+.row { display: flex; align-items: center; }
+.gap { gap: .75rem; }
+.wrap { flex-wrap: wrap; }
+.center { display: flex; justify-content: center; }
+
+.history {
+  margin: .5rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.tabs { display: flex; gap: .5rem; justify-content: center; }
+.tab {
+  background: #fff;
+  color: #111;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: .5rem .9rem;
+}
+.tab.active { background: #f4f4f4; }
+.tab:disabled { opacity: .5; cursor: not-allowed; }
