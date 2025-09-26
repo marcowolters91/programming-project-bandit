@@ -1,33 +1,25 @@
 import { useState } from "react";
-import BernoulliBandit from "./BernoulliBandit";
-import "./BernoulliBandit.css";
-import banditImage from "./bandit.png"; 
-import { Link } from 'react-router-dom'
+import "./BanditApp.css";
+import banditImage from "../assets/bandit.png";
+import BernoulliBandit from "../functions/BernoulliBandit.js";
 
 const bandit = new BernoulliBandit([0.2, 0.5, 0.6, 0.8]);
 
-export default function BernoulliBandit_App() {
+export default function BanditApp() {
   const [history, setHistory] = useState([]);
   const [maxTurns, setMaxTurns] = useState("");
   const [turns, setTurns] = useState(0);
-  const [locked, setLocked] = useState(false); 
+  const [locked, setLocked] = useState(false);
 
   const handlePull = (armIndex) => {
     if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) {
       alert("Maximale Anzahl an Zügen erreicht!");
       return;
     }
-
     const reward = bandit.pull(armIndex);
-    setHistory((prev) => [
-      { arm: armIndex, reward, turn: prev.length + 1 },
-      ...prev,
-    ]);
+    setHistory((prev) => [{ arm: armIndex, reward, turn: prev.length + 1 }, ...prev]);
     setTurns((prev) => prev + 1);
-
-    if (!locked) {
-      setLocked(true);
-    }
+    if (!locked) setLocked(true);
   };
 
   const handleReset = () => {
@@ -37,19 +29,13 @@ export default function BernoulliBandit_App() {
   };
 
   const setUnlimitedTurns = () => {
-    if (!locked) {
-      setMaxTurns(""); 
-    }
+    if (!locked) setMaxTurns("");
   };
 
   const handleMaxTurnsChange = (e) => {
     const value = e.target.value;
-    if (value === "") {
-      setMaxTurns(""); 
-    } else {
-      const num = Math.max(0, parseInt(value, 10)); 
-      setMaxTurns(num);
-    }
+    if (value === "") setMaxTurns("");
+    else setMaxTurns(Math.max(0, parseInt(value, 10)));
   };
 
   return (
@@ -58,11 +44,7 @@ export default function BernoulliBandit_App() {
       <p>Welcher Automat ist der Beste?</p>
 
       <div>
-        <img
-          src={banditImage}
-          className="bandit-logo"
-          alt="Bernoulli Bandit"
-        />
+        <img src={banditImage} className="bandit-logo" alt="Bernoulli Bandit" />
       </div>
 
       <div className="turns-input">
@@ -88,29 +70,25 @@ export default function BernoulliBandit_App() {
             Arm {arm}
           </button>
         ))}
-        <button onClick={handleReset} className="reset-btn">
-          Ergebnis-Reset
-        </button>
+        <button onClick={handleReset} className="reset-btn">Ergebnis-Reset</button>
       </div>
 
       <h2>Ergebnisse:</h2>
       <p>
-        Aktuelle Züge: {turns}
-        {maxTurns !== "" && ` / ${maxTurns}`}
+        Aktuelle Züge: {turns}{maxTurns !== "" && ` / ${maxTurns}`}
       </p>
 
       <ul>
         {history.map((h, i) => (
           <li key={i}>
-            Zug {h.turn}: Arm {h.arm} →{" "}
-            {h.reward === 1 ? "Erfolg ✅" : "Misserfolg ❌"}
+            Zug {h.turn}: Arm {h.arm} → {h.reward === 1 ? "Erfolg ✅" : "Misserfolg ❌"}
           </li>
         ))}
       </ul>
+
+      {/* Kein Router, also kein <Link>. Wenn du „Zurück“ brauchst: */}
       <div>
-        <Link to="/">
-              <button className="btn">Zurück</button>
-        </Link>
+        <button className="btn" onClick={() => window.history.back()}>Zurück</button>
       </div>
     </>
   );
