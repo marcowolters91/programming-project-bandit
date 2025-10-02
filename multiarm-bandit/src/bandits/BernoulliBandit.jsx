@@ -1,32 +1,53 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import "../styles/bandit.css";
-import banditImage from "../assets/bandit.png";
-import BernoulliBandit from "../functions/BernoulliBandit.js";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend, LabelList } from "recharts";
 
-export default function BernoulliBanditUI({ title = "Bernoulli-Bandit" }) {
+// Algorithmen
+import { randomChoice } from "../functions/randomChoice";
+import { greedy } from "../functions/greedy";
+import { epsilonGreedy } from "../functions/epsilonGreedy";
+import { ucb } from "../functions/ucb";
+import { posterior } from "../functions/posterior";
+
+// Diagramme
+import { ProbabilityChart } from "../diagrams/probabilityChart.jsx";
+import { AlgorithmHitsChart } from "../diagrams/algorithmHitsChart.jsx";
+
+export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategien (Bernoulli-Bandit)" }) {
   const [armsCount, setArmsCount] = useState(4);
+  const [armNames, setArmNames] = useState(generateArmNames(4));
+  const [maxTurns, setMaxTurns] = useState("");
+  const [turns, setTurns] = useState(0);
+  const [locked, setLocked] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+  const [userLog, setUserLog] = useState([]);
+
   const generateProbabilities = (count) =>
     Array.from({ length: count }, () => Math.floor(Math.random() * 101) / 100);
 
   const [probabilities, setProbabilities] = useState(generateProbabilities(armsCount));
-  const bandit = useMemo(() => new BernoulliBandit(probabilities), [probabilities]);
 
-  const algorithmsList = ["Random", "Greedy", "Epsilon", "UCB", "Posterior", "Manual"];
+  const algorithmsList = ["Random", "Greedy", "Epsilon", "UCB", "Posterior", "User"];
   const epsilon = 0.1;
 
   const [histories, setHistories] = useState(
     Object.fromEntries(algorithmsList.map((algo) => [algo, []]))
   );
 
-  const [maxTurns, setMaxTurns] = useState("");
-  const [turns, setTurns] = useState(0);
-  const [locked, setLocked] = useState(false);
-
-  const armNames = useMemo(
-    () => Array.from({ length: armsCount }, (_, i) => `Heizstrategie ${String.fromCharCode(65 + i)}`),
-    [armsCount]
-  );
+  // Armnamen: erste 4 wie Gaussian, ab dann Heizstrategie A–Z
+  function generateArmNames(count) {
+    const gaussNames = [
+      "Konstante Temperatur halten",
+      "Stoßweise aufheizen",
+      "Bedarfsgesteuert (nur bei Kälte)",
+      "Nachtabsenkung mit Morgen-Boost",
+    ];
+    if (count <= 4) return gaussNames.slice(0, count);
+    const extra = Array.from(
+      { length: count - 4 },
+      (_, i) => `Heizstrategie ${String.fromCharCode(65 + i)}`
+    );
+    return [...gaussNames, ...extra];
+  }
 
   const getStats = (algorithm) => {
     const data = histories[algorithm];
@@ -39,195 +60,185 @@ export default function BernoulliBanditUI({ title = "Bernoulli-Bandit" }) {
     return { n_i, successes, total: data.length };
   };
 
-  const chooseArm = (algorithm) => {
-    const { n_i, successes, total } = getStats(algorithm);
-
-    if (algorithm === "Random") return Math.floor(Math.random() * armsCount);
-
-    if (algorithm === "Greedy") {
-      const maxSuccess = Math.max(...successes);
-      const bestArms = successes.map((v, i) => (v === maxSuccess ? i : -1)).filter((i) => i !== -1);
-      return bestArms[Math.floor(Math.random() * bestArms.length)];
+  const chooseArm = (algorithm, n_i, successes, total, armsCount) => {
+    switch (algorithm) {
+      case "Random":
+        return randomChoice(armsCount);
+      case "Greedy":
+        return greedy(successes);
+      case "Epsilon":
+        return epsilonGreedy(successes, armsCount, epsilon);
+      case "UCB":
+        return ucb(successes, n_i, total);
+      case "Posterior":
+        return posterior(successes, n_i);
+      default:
+        return 0;
     }
-
-    if (algorithm === "Epsilon") {
-      if (Math.random() < epsilon) return Math.floor(Math.random() * armsCount);
-      const maxSuccess = Math.max(...successes);
-      const bestArms = successes.map((v, i) => (v === maxSuccess ? i : -1)).filter((i) => i !== -1);
-      return bestArms[Math.floor(Math.random() * bestArms.length)];
-    }
-
-    if (algorithm === "UCB") {
-      const ucbValues = successes.map((s, i) => {
-        if (n_i[i] === 0) return Infinity;
-        return s / n_i[i] + Math.sqrt((2 * Math.log(total + 1)) / n_i[i]);
-      });
-      const maxUCB = Math.max(...ucbValues);
-      const bestArms = ucbValues.map((v, i) => (v === maxUCB ? i : -1)).filter((i) => i !== -1);
-      return bestArms[Math.floor(Math.random() * bestArms.length)];
-    }
-
-    if (algorithm === "Posterior") {
-      const samples = successes.map((s, i) => {
-        const alpha = 1 + s;
-        const beta = 1 + n_i[i] - s;
-        const gamma = (k) => {
-          let x = 0;
-          for (let j = 0; j < k; j++) x += -Math.log(Math.random());
-          return x;
-        };
-        return gamma(alpha) / (gamma(alpha) + gamma(beta));
-      });
-      const maxSample = Math.max(...samples);
-      const bestArms = samples.map((v, i) => (v === maxSample ? i : -1)).filter((i) => i !== -1);
-      return bestArms[Math.floor(Math.random() * bestArms.length)];
-    }
-
-    return 0;
   };
 
-  const handleNextTurn = () => {
-    if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return;
+  // Automatischer Schritt
+  const step = () => {
+    if (locked) return;
     const newHistories = { ...histories };
-    ["Random", "Greedy", "Epsilon", "UCB", "Posterior"].forEach((algo) => {
-      const arm = chooseArm(algo);
-      const reward = bandit.pull(arm);
-      newHistories[algo] = [{ arm, reward, turn: turns + 1, algo }, ...newHistories[algo]];
+
+    algorithmsList.forEach((algo) => {
+      if (algo === "User") return;
+      const { n_i, successes, total } = getStats(algo);
+      const arm = chooseArm(algo, n_i, successes, total, armsCount);
+      const reward = Math.random() < probabilities[arm] ? 1 : 0;
+      newHistories[algo] = [...newHistories[algo], { arm, reward }];
     });
+
     setHistories(newHistories);
-    setTurns((t) => t + 1);
-    if (!locked) setLocked(true);
+    setTurns(turns + 1);
+    if (maxTurns && turns + 1 >= maxTurns) setLocked(true);
   };
 
-  const handleManualPull = (arm) => {
-    if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return;
-    const reward = bandit.pull(arm);
-    const newHistories = { ...histories };
-    newHistories.Manual = [{ arm, reward, turn: turns + 1, algo: "Manual" }, ...newHistories.Manual];
-    setHistories(newHistories);
-    setTurns((t) => t + 1);
-    if (!locked) setLocked(true);
-  };
-
-  const handleEndManualRound = () => {
-    if (maxTurns === "") return;
-    const remainingTurns = parseInt(maxTurns, 10) - turns;
-    if (remainingTurns <= 0) return;
+  // Manueller Schritt (User + alle Algorithmen)
+  const userStep = (arm) => {
+    if (locked) return;
     const newHistories = { ...histories };
 
-    for (let t = 0; t < remainingTurns; t++) {
-      ["Random", "Greedy", "Epsilon", "UCB", "Posterior"].forEach((algo) => {
-        const arm = chooseArm(algo);
-        const reward = bandit.pull(arm);
-        newHistories[algo] = [{ arm, reward, turn: turns + t + 1, algo }, ...newHistories[algo]];
-      });
-    }
+    // User
+    const rewardUser = Math.random() < probabilities[arm] ? 1 : 0;
+    newHistories.User = [...newHistories.User, { arm, reward: rewardUser }];
+
+    // Alle anderen Algorithmen
+    algorithmsList.forEach((algo) => {
+      if (algo === "User") return;
+      const { n_i, successes, total } = getStats(algo);
+      const armChoice = chooseArm(algo, n_i, successes, total, armsCount);
+      const reward = Math.random() < probabilities[armChoice] ? 1 : 0;
+      newHistories[algo] = [...newHistories[algo], { arm: armChoice, reward }];
+    });
 
     setHistories(newHistories);
-    setTurns(parseInt(maxTurns, 10));
-    setLocked(true);
+    setTurns(turns + 1);
+
+    // Feedback + Log
+    const message = `Zug ${turns + 1}: ${armNames[arm]} → ${
+      rewardUser === 1 ? "Treffer!" : "Kein Treffer"
+    }`;
+    const success = rewardUser === 1;
+
+    setFeedback({ text: message, success });
+    setUserLog((prev) => {
+      const newLog = [...prev, { text: message, success }];
+      return newLog.slice(-5);
+    });
+
+    if (maxTurns && turns + 1 >= maxTurns) setLocked(true);
   };
 
-  const handleReset = () => {
+  const reset = () => {
     setHistories(Object.fromEntries(algorithmsList.map((algo) => [algo, []])));
     setTurns(0);
     setLocked(false);
+    setArmNames(generateArmNames(armsCount));
     setProbabilities(generateProbabilities(armsCount));
+    setMaxTurns("");
+    setFeedback(null);
+    setUserLog([]);
   };
 
-  const successCounts = armNames.map((arm, i) => {
-    const obj = { name: arm };
-    algorithmsList.forEach((algo) => {
-      obj[algo] = histories[algo].filter((h) => h.arm === i && h.reward === 1).length;
-    });
-    return obj;
-  });
-
-  const isRoundOver = maxTurns !== "" ? turns >= parseInt(maxTurns, 10) : locked;
-
-  const probabilityChartData = probabilities.map((p, i) => ({ name: armNames[i], probability: p }));
-
   return (
-    <section className="card bandit">
-      <h2>{title}</h2>
-      <img src={banditImage} className="bandit-logo" alt="Bernoulli Bandit" />
+    <section className="bandit-dashboard">
+      <header className="dashboard-header">
+        <h2>{title}</h2>
+        <p className="intro">
+          Teste verschiedene Heizstrategien und vergleiche ihre Effizienz.
+        </p>
+      </header>
 
-      <div className="row gap">
-        <label>
-          Anzahl Arme:
-          <input
-            type="number"
-            min="1"
-            max="26"
-            value={armsCount}
-            onChange={(e) => {
-              const count = Math.max(1, Math.min(26, parseInt(e.target.value) || 1));
-              setArmsCount(count);
-              setProbabilities(generateProbabilities(count));
-              handleReset();
-            }}
-            disabled={locked}
-          />
-        </label>
-
-        <label>
-          Maximale Züge:
-          <input
-            type="number"
-            min="0"
-            value={maxTurns}
-            onChange={(e) =>
-              setMaxTurns(e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value, 10)))
-            }
-            disabled={locked}
-          />
-        </label>
-
-        <button onClick={handleNextTurn} disabled={isRoundOver}>
-          Nächster Zug (Algorithmen)
-        </button>
-        <button onClick={handleReset} className="reset-btn">
-          Reset
-        </button>
-        <button onClick={handleEndManualRound} disabled={isRoundOver}>
-          Runde beenden & Algorithmen ausführen
-        </button>
-      </div>
-
-      <div className="row gap wrap">
-        {[...Array(bandit.getArms()).keys()].map((arm) => (
-          <button key={arm} onClick={() => handleManualPull(arm)}>
-            {armNames[arm]}
+      {/* Control Panel */}
+      <div className="control-panel">
+        <h3>Simulationseinstellungen</h3>
+        <div className="row gap">
+          <label>
+            Anzahl Arme:
+            <input
+              type="number"
+              min="2"
+              max="26"
+              value={armsCount}
+              onChange={(e) => {
+                const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
+                setArmsCount(count);
+                setArmNames(generateArmNames(count));
+                setProbabilities(generateProbabilities(count));
+                setHistories(Object.fromEntries(algorithmsList.map((algo) => [algo, []])));
+                setTurns(0);
+                setLocked(false);
+                setFeedback(null);
+                setUserLog([]);
+              }}
+            />
+          </label>
+          <label>
+            Max. Runden:
+            <input
+              type="number"
+              min="1"
+              value={maxTurns}
+              onChange={(e) =>
+                setMaxTurns(e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value)))
+              }
+            />
+          </label>
+          <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
+        </div>
+        <div className="row gap">
+          <button onClick={step} disabled={locked}>
+            Nächste Runde (Automatisch)
           </button>
-        ))}
+          <button onClick={reset} className="reset-btn">
+            Reset
+          </button>
+        </div>
       </div>
 
-      <h3>Trefferanzahl pro Arm & Algorithmus</h3>
-      <BarChart width={800} height={350} data={successCounts} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis allowDecimals={false} />
-        <Tooltip />
-        <Legend />
-        {algorithmsList.map((algo, idx) => (
-          <Bar key={algo} dataKey={algo} fill={["#2196f3", "#ff9800", "#9c27b0", "#f44336", "#00bcd4", "#4caf50"][idx]} />
-        ))}
-      </BarChart>
+      {/* Strategie Auswahl */}
+      <div className="user-choice">
+        <h3>Wähle eine Heizstrategie</h3>
+        <div className="strategies-grid">
+          {armNames.map((name, i) => (
+            <button key={i} onClick={() => userStep(i)} disabled={locked}>
+              {name}
+            </button>
+          ))}
+        </div>
+        {feedback && (
+          <p className={`feedback ${feedback.success ? "hit" : "miss"}`}>
+            {feedback.text}
+          </p>
+        )}
+        {userLog.length > 0 && (
+          <div className="user-log">
+            <h4>Letzte Züge</h4>
+            <ul>
+              {userLog.map((entry, idx) => (
+                <li key={idx} className={entry.success ? "hit" : "miss"}>
+                  {entry.text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
-      {isRoundOver && (
-        <>
-          <h3>Wahrscheinlichkeit der Arme</h3>
-          <BarChart width={800} height={250} data={probabilityChartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis domain={[0, 1]} tickFormatter={(v) => `${v * 100}%`} />
-            <Tooltip formatter={(v) => `${v * 100}%`} />
-            <Bar dataKey="probability" fill="#4caf50">
-              <LabelList dataKey="probability" position="top" formatter={(v) => `${v * 100}%`} />
-            </Bar>
-          </BarChart>
-        </>
-      )}
+      {/* Diagramme */}
+      <div className="charts-section">
+        <h3>Ergebnisse</h3>
+        <p>
+          Gespielte Runden: {turns}
+          {maxTurns !== "" && ` / ${maxTurns}`}
+        </p>
+        <div className="charts-grid">
+          {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}
+          <AlgorithmHitsChart histories={histories} />
+        </div>
+      </div>
     </section>
   );
 }
