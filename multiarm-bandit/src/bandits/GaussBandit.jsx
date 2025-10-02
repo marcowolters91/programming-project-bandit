@@ -4,13 +4,13 @@ import "../styles/bandit.css"; // optional
 import banditImage from "../assets/bandit.png"; // optional
 
 export default function GaussBandit() {
-  const [strategyNames, setStrategyNames] = useState([
+  const [strategyNames] = useState([
     "Konstante Temperatur halten",
     "Stoßweise aufheizen",
     "Bedarfsgesteuert (nur bei Kälte)",
     "Nachtabsenkung mit Morgen-Boost",
   ]);
-  const [sigma, setSigma] = useState(1.0);
+  const [sigma] = useState(1.0);
 
   // Maximal erlaubte Züge (kann auch "" = leer sein)
   const [maxTurns, setMaxTurns] = useState("");
