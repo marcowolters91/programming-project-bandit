@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
 import GaussianBandit from "../functions/GaussBandit.js";
-import "../styles/bandit.css"; // optional
-import banditImage from "../assets/bandit.png"; // optional
+import "../styles/bandit.css";
 
-export default function GaussBandit() {
+export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gauss-Bandit)" }) {
   const [strategyNames] = useState([
     "Konstante Temperatur halten",
     "Stoßweise aufheizen",
@@ -23,7 +22,7 @@ export default function GaussBandit() {
     if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return; // Limit beachten
 
     const reward = bandit.pull(strategyIndex);
-    setHistory((prev) => [{ turn: turns + 1, strategyIndex, reward }, ...prev]);
+    setHistory((prev) => [...prev, { turn: turns + 1, strategyIndex, reward }]);
     setTurns((t) => t + 1);
   };
 
@@ -35,83 +34,104 @@ export default function GaussBandit() {
   };
 
   return (
-    <section className="card bandit">
-      <h2>Heizstrategien Bandit – Manuelles Testen mit Limit</h2>
-      {banditImage && <img src={banditImage} className="bandit-logo" alt="Heizstrategien" />}
+    <section className="bandit-dashboard">
+      {/* Header */}
+      <header className="dashboard-header">
+        <h2>{title}</h2>
+        <p className="intro">
+          Teste verschiedene Heizstrategien und beobachte die durchschnittliche Leistung (kW).
+        </p>
+      </header>
 
-      <div className="row gap">
-        <label>
-          Max. Züge:{" "}
-          <input
-            type="number"
-            min="1"
-            value={maxTurns}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === "") {
-                setMaxTurns(""); // Eingabe darf leer sein
-              } else {
-                setMaxTurns(Math.max(1, parseInt(val, 10)));
-              }
-            }}
-          />
-        </label>
-        <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
-      </div>
-
-      <div className="row gap">
-        {[...Array(bandit.K).keys()].map((i) => (
-          <button
-            key={i}
-            onClick={() => handlePull(i)}
-            disabled={maxTurns !== "" && turns >= maxTurns}
-          >
-            {bandit.strategies[i].name}
+      {/* Control Panel */}
+      <div className="control-panel">
+        <h3>Simulationseinstellungen</h3>
+        <div className="row gap">
+          <label>
+            Max. Runden:
+            <input
+              type="number"
+              min="1"
+              value={maxTurns}
+              onChange={(e) => {
+                const val = e.target.value;
+                setMaxTurns(val === "" ? "" : Math.max(1, parseInt(val, 10)));
+              }}
+            />
+          </label>
+          <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
+        </div>
+        <div className="row gap">
+          <button onClick={handleReset} className="reset-btn">
+            Reset
           </button>
-        ))}
-        <button onClick={handleReset} className="reset-btn">
-          Reset
-        </button>
+        </div>
       </div>
 
-      <h3>Ergebnisse</h3>
-      <p>
-        Getestete Strategien: {turns}
-        {maxTurns !== "" && ` / ${maxTurns}`}
-      </p>
-
-      <table>
-        <thead>
-          <tr>
-            <th>Strategie</th>
-            <th>Anzahl Züge</th>
-            <th>Empirische Durchschnittsleistung</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bandit.strategies.map((s, i) => (
-            <tr key={i}>
-              <td>{s.name}</td>
-              <td>{bandit.counts[i]}</td>
-              <td>
-                {bandit.counts[i]
-                  ? (bandit.sumRewards[i] / bandit.counts[i]).toFixed(2)
-                  : "0.00"}{" "}
-                kW
-              </td>
-            </tr>
+      {/* Strategie Auswahl */}
+      <div className="user-choice">
+        <h3>Wähle eine Heizstrategie</h3>
+        <div className="strategies-grid">
+          {[...Array(bandit.K).keys()].map((i) => (
+            <button
+              key={i}
+              onClick={() => handlePull(i)}
+              disabled={maxTurns !== "" && turns >= maxTurns}
+            >
+              {bandit.strategies[i].name}
+            </button>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
 
-      <ul className="history">
-        {history.map((h, i) => (
-          <li key={i}>
-            Zug {h.turn}: {bandit.strategies[h.strategyIndex].name} →{" "}
-            {h.reward.toFixed(2)} kW
-          </li>
-        ))}
-      </ul>
+      {/* Ergebnisse */}
+      <div className="charts-section">
+        <h3>Ergebnisse</h3>
+        <p>
+          Gespielte Runden: {turns}
+          {maxTurns !== "" && ` / ${maxTurns}`}
+        </p>
+
+        {/* Tabelle mit empirischen Werten */}
+        <table>
+          <thead>
+            <tr>
+              <th>Strategie</th>
+              <th>Anzahl Züge</th>
+              <th>Durchschnittsleistung</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bandit.strategies.map((s, i) => (
+              <tr key={i}>
+                <td>{s.name}</td>
+                <td>{bandit.counts[i]}</td>
+                <td>
+                  {bandit.counts[i]
+                    ? (bandit.sumRewards[i] / bandit.counts[i]).toFixed(2)
+                    : "0.00"}{" "}
+                  kW
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Historie */}
+        {history.length > 0 && (
+          <div className="user-log">
+            <h4>Letzte Züge</h4>
+            <ul>
+              {history.slice(-5).map((h, i) => (
+                <li key={i}>
+                  Zug {h.turn}: {bandit.strategies[h.strategyIndex].name} →{" "}
+                  {h.reward.toFixed(2)} kW
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </section>
   );
 }
