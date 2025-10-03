@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { randomChoice } from "../../src/utils/randomChoice.js";
+import { randomChoice } from "../../src/functions/randomChoice.js";
 
 describe("randomChoice", () => {
   it("soll eine Zahl zwischen 0 und armsCount-1 zurückgeben", () => {
