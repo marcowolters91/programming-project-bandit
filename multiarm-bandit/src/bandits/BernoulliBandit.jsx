@@ -64,8 +64,10 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
     switch (algorithm) {
       case "Random":
         return randomChoice(armsCount);
-      case "Greedy":
-        return greedy(successes);
+      case "Greedy": {
+        const values = successes.map((s, i) => (n_i[i] > 0 ? s / n_i[i] : 0));
+        return greedy(values);
+        }
       case "Epsilon":
         return epsilonGreedy(successes, armsCount, epsilon);
       case "UCB":
