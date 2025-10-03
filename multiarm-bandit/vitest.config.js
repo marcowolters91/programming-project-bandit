@@ -7,7 +7,7 @@ export default defineConfig({
     environment: "jsdom",
     include: ["tests/**/*.test.js"],
     coverage: {
-      reporter: ["text", "html"], 
+      reporter: ["text", "html", "json"], 
       reportsDirectory: "./coverage",
       provider: "v8",
     },
