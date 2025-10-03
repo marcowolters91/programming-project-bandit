@@ -21,7 +21,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci # maybe use npm install?
+        run: npm ci
 
       - name: Linting - Run ESLint
         run: npm run lint -- --max-warnings=0
@@ -29,5 +29,10 @@ jobs:
       - name: Run build
         run: npm run build --if-present
 
-      - name: Run tests
-        run: npm test
+      - name: Run tests with coverage
+        run: npm run coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./multiarm-bandit/coverage
