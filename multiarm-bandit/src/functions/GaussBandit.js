@@ -1,7 +1,7 @@
 export default class GaussianBandit {
   constructor(strategyNames, sigma = 1.0) {
     this.K = strategyNames.length;
-    this.strategies = strategyNames.map((name) => ({
+    this.strategies = strategyNames.map(name => ({
       name,
       mean: this._randomMean(3, 10), // zufälliger Mittelwert zwischen 3–10 kW
     }));
@@ -39,7 +39,8 @@ export default class GaussianBandit {
   }
 
   _randn() {
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
