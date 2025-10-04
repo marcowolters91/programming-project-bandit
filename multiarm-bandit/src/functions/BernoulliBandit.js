@@ -4,7 +4,7 @@ export default class BernoulliBandit {
   }
   pull(armIndex) {
     if (armIndex < 0 || armIndex >= this.probabilities.length) {
-      throw new Error("Ungültiger Arm gewählt");
+      throw new Error('Ungültiger Arm gewählt');
     }
     const p = this.probabilities[armIndex];
     return Math.random() < p ? 1 : 0;

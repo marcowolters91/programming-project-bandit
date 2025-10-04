@@ -6,9 +6,12 @@
   --bg: #fff;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   background: var(--bg);
@@ -32,7 +35,9 @@ h1 {
 .bandit-logo {
   height: 8em;
   padding: 1em;
-  transition: filter 300ms, box-shadow 300ms;
+  transition:
+    filter 300ms,
+    box-shadow 300ms;
   will-change: filter, box-shadow;
 }
 
@@ -52,15 +57,22 @@ button {
   transition: border-color 0.25s;
 }
 
-button:hover { border-color: #4caf50; }
-button:disabled { opacity: .6; cursor: not-allowed; }
+button:hover {
+  border-color: #4caf50;
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 .reset-btn {
   background-color: #f44336;
   color: #fff;
 }
 
-.reset-btn:hover { background-color: #d32f2f; }
+.reset-btn:hover {
+  background-color: #d32f2f;
+}
 
 .turns-input {
   margin: 1rem 0;
@@ -78,18 +90,27 @@ button:disabled { opacity: .6; cursor: not-allowed; }
 .layout {
   display: grid;
   grid-template-areas:
-    "header"
-    "nav"
-    "main"
-    "footer";
+    'header'
+    'nav'
+    'main'
+    'footer';
   grid-template-rows: auto auto 1fr auto;
   gap: var(--gap);
 }
 
-.header { grid-area: header; }
-.nav    { grid-area: nav; }
-.main   { grid-area: main; }
-.footer { grid-area: footer; color: var(--muted); }
+.header {
+  grid-area: header;
+}
+.nav {
+  grid-area: nav;
+}
+.main {
+  grid-area: main;
+}
+.footer {
+  grid-area: footer;
+  color: var(--muted);
+}
 
 .card {
   border: 1px solid var(--border);
@@ -98,26 +119,45 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   text-align: left;
 }
 
-.row { display: flex; align-items: center; }
-.gap { gap: .75rem; }
-.wrap { flex-wrap: wrap; }
-.center { display: flex; justify-content: center; }
+.row {
+  display: flex;
+  align-items: center;
+}
+.gap {
+  gap: 0.75rem;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.center {
+  display: flex;
+  justify-content: center;
+}
 
 .history {
-  margin: .5rem 0 0;
+  margin: 0.5rem 0 0;
   padding-left: 1.25rem;
 }
 
-.tabs { display: flex; gap: .5rem; justify-content: center; }
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
 .tab {
   background: #fff;
   color: #111;
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: .5rem .9rem;
+  padding: 0.5rem 0.9rem;
 }
-.tab.active { background: #f4f4f4; }
-.tab:disabled { opacity: .5; cursor: not-allowed; }
+.tab.active {
+  background: #f4f4f4;
+}
+.tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
 .intro {
   text-align: center;
@@ -137,7 +177,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   padding: 1rem 1.5rem;
   border-radius: 10px;
   margin: 1.5rem 0;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .user-choice {
@@ -182,7 +222,7 @@ button:disabled { opacity: .6; cursor: not-allowed; }
   background: #f9fafb;
   padding: 0.8rem 1rem;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .user-log h4 {

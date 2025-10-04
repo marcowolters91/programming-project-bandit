@@ -6,12 +6,12 @@ import NormalDistributionChart from "../diagrams/normalDistributionChart";
 import UserGreedyTrend from "../diagrams/algorithmTrendChart";
 import { greedy } from "../functions/greedy.js";
 
-export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gauss-Bandit)" }) {
+export default function GaussBandit({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
   const [strategyNames] = useState([
-    "Konstante Temperatur halten",
-    "Stoßweise aufheizen",
-    "Bedarfsgesteuert (nur bei Kälte)",
-    "Nachtabsenkung mit Morgen-Boost",
+    'Konstante Temperatur halten',
+    'Stoßweise aufheizen',
+    'Bedarfsgesteuert (nur bei Kälte)',
+    'Nachtabsenkung mit Morgen-Boost',
   ]);
   const [sigma] = useState(1.0);
   const [maxTurns, setMaxTurns] = useState("");
@@ -83,13 +83,13 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
               type="number"
               min="1"
               value={maxTurns}
-              onChange={(e) => {
+              onChange={e => {
                 const val = e.target.value;
-                setMaxTurns(val === "" ? "" : Math.max(1, parseInt(val, 10)));
+                setMaxTurns(val === '' ? '' : Math.max(1, parseInt(val, 10)));
               }}
             />
           </label>
-          <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
+          <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
         </div>
         <div className="row gap">
           <button onClick={handleReset} className="reset-btn">
@@ -106,7 +106,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
             <button
               key={i}
               onClick={() => handlePull(i)}
-              disabled={maxTurns !== "" && turns >= maxTurns}
+              disabled={maxTurns !== '' && turns >= maxTurns}
             >
               {banditUser.strategies[i].name}
             </button>
@@ -119,7 +119,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
         <h3>Ergebnisse</h3>
         <p>
           Gespielte Runden: {turns}
-          {maxTurns !== "" && ` / ${maxTurns}`}
+          {maxTurns !== '' && ` / ${maxTurns}`}
         </p>
 
         {/* Tabelle zeigt nur User-Daten */}
