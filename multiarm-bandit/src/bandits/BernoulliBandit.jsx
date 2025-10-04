@@ -1,45 +1,47 @@
-import { useState } from "react";
-import "../styles/bandit.css";
+import { useState } from 'react';
+import '../styles/bandit.css';
 
 // Algorithmen
-import { randomChoice } from "../functions/randomChoice";
-import { greedy } from "../functions/greedy";
-import { epsilonGreedy } from "../functions/epsilonGreedy";
-import { ucb } from "../functions/ucb";
-import { posterior } from "../functions/posterior";
+import { randomChoice } from '../functions/randomChoice';
+import { greedy } from '../functions/greedy';
+import { epsilonGreedy } from '../functions/epsilonGreedy';
+import { ucb } from '../functions/ucb';
+import { posterior } from '../functions/posterior';
 
 // Diagramme
-import { ProbabilityChart } from "../diagrams/probabilityChart.jsx";
-import { AlgorithmHitsChart } from "../diagrams/algorithmHitsChart.jsx";
+import { ProbabilityChart } from '../diagrams/probabilityChart.jsx';
+import { AlgorithmHitsChart } from '../diagrams/algorithmHitsChart.jsx';
 
-export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategien (Bernoulli-Bandit)" }) {
+export default function BernoulliBanditUI({
+  title = 'Vergleich von Heizstrategien (Bernoulli-Bandit)',
+}) {
   const [armsCount, setArmsCount] = useState(4);
   const [armNames, setArmNames] = useState(generateArmNames(4));
-  const [maxTurns, setMaxTurns] = useState("");
+  const [maxTurns, setMaxTurns] = useState('');
   const [turns, setTurns] = useState(0);
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [userLog, setUserLog] = useState([]);
 
-  const generateProbabilities = (count) =>
+  const generateProbabilities = count =>
     Array.from({ length: count }, () => Math.floor(Math.random() * 101) / 100);
 
   const [probabilities, setProbabilities] = useState(generateProbabilities(armsCount));
 
-  const algorithmsList = ["Random", "Greedy", "Epsilon", "UCB", "Posterior", "User"];
+  const algorithmsList = ['Random', 'Greedy', 'Epsilon', 'UCB', 'Posterior', 'User'];
   const epsilon = 0.1;
 
   const [histories, setHistories] = useState(
-    Object.fromEntries(algorithmsList.map((algo) => [algo, []]))
+    Object.fromEntries(algorithmsList.map(algo => [algo, []]))
   );
 
   // Armnamen: erste 4 wie Gaussian, ab dann Heizstrategie A–Z
   function generateArmNames(count) {
     const gaussNames = [
-      "Konstante Temperatur halten",
-      "Stoßweise aufheizen",
-      "Bedarfsgesteuert (nur bei Kälte)",
-      "Nachtabsenkung mit Morgen-Boost",
+      'Konstante Temperatur halten',
+      'Stoßweise aufheizen',
+      'Bedarfsgesteuert (nur bei Kälte)',
+      'Nachtabsenkung mit Morgen-Boost',
     ];
     if (count <= 4) return gaussNames.slice(0, count);
     const extra = Array.from(
@@ -49,11 +51,11 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
     return [...gaussNames, ...extra];
   }
 
-  const getStats = (algorithm) => {
+  const getStats = algorithm => {
     const data = histories[algorithm];
     const n_i = Array(armsCount).fill(0);
     const successes = Array(armsCount).fill(0);
-    data.forEach((h) => {
+    data.forEach(h => {
       n_i[h.arm]++;
       if (h.reward === 1) successes[h.arm]++;
     });
@@ -62,17 +64,17 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
 
   const chooseArm = (algorithm, n_i, successes, total, armsCount) => {
     switch (algorithm) {
-      case "Random":
+      case 'Random':
         return randomChoice(armsCount);
-      case "Greedy": {
+      case 'Greedy': {
         const values = successes.map((s, i) => (n_i[i] > 0 ? s / n_i[i] : 0));
         return greedy(values);
-        }
-      case "Epsilon":
+      }
+      case 'Epsilon':
         return epsilonGreedy(successes, armsCount, epsilon);
-      case "UCB":
+      case 'UCB':
         return ucb(successes, n_i, total);
-      case "Posterior":
+      case 'Posterior':
         return posterior(successes, n_i);
       default:
         return 0;
@@ -84,8 +86,8 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
     if (locked) return;
     const newHistories = { ...histories };
 
-    algorithmsList.forEach((algo) => {
-      if (algo === "User") return;
+    algorithmsList.forEach(algo => {
+      if (algo === 'User') return;
       const { n_i, successes, total } = getStats(algo);
       const arm = chooseArm(algo, n_i, successes, total, armsCount);
       const reward = Math.random() < probabilities[arm] ? 1 : 0;
@@ -98,7 +100,7 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
   };
 
   // Manueller Schritt (User + alle Algorithmen)
-  const userStep = (arm) => {
+  const userStep = arm => {
     if (locked) return;
     const newHistories = { ...histories };
 
@@ -107,8 +109,8 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
     newHistories.User = [...newHistories.User, { arm, reward: rewardUser }];
 
     // Alle anderen Algorithmen
-    algorithmsList.forEach((algo) => {
-      if (algo === "User") return;
+    algorithmsList.forEach(algo => {
+      if (algo === 'User') return;
       const { n_i, successes, total } = getStats(algo);
       const armChoice = chooseArm(algo, n_i, successes, total, armsCount);
       const reward = Math.random() < probabilities[armChoice] ? 1 : 0;
@@ -120,12 +122,12 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
 
     // Feedback + Log
     const message = `Zug ${turns + 1}: ${armNames[arm]} → ${
-      rewardUser === 1 ? "Treffer!" : "Kein Treffer"
+      rewardUser === 1 ? 'Treffer!' : 'Kein Treffer'
     }`;
     const success = rewardUser === 1;
 
     setFeedback({ text: message, success });
-    setUserLog((prev) => {
+    setUserLog(prev => {
       const newLog = [...prev, { text: message, success }];
       return newLog.slice(-5);
     });
@@ -134,12 +136,12 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
   };
 
   const reset = () => {
-    setHistories(Object.fromEntries(algorithmsList.map((algo) => [algo, []])));
+    setHistories(Object.fromEntries(algorithmsList.map(algo => [algo, []])));
     setTurns(0);
     setLocked(false);
     setArmNames(generateArmNames(armsCount));
     setProbabilities(generateProbabilities(armsCount));
-    setMaxTurns("");
+    setMaxTurns('');
     setFeedback(null);
     setUserLog([]);
   };
@@ -148,9 +150,7 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
     <section className="bandit-dashboard">
       <header className="dashboard-header">
         <h2>{title}</h2>
-        <p className="intro">
-          Teste verschiedene Heizstrategien und vergleiche ihre Effizienz.
-        </p>
+        <p className="intro">Teste verschiedene Heizstrategien und vergleiche ihre Effizienz.</p>
       </header>
 
       {/* Control Panel */}
@@ -164,12 +164,12 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
               min="2"
               max="26"
               value={armsCount}
-              onChange={(e) => {
+              onChange={e => {
                 const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
                 setArmsCount(count);
                 setArmNames(generateArmNames(count));
                 setProbabilities(generateProbabilities(count));
-                setHistories(Object.fromEntries(algorithmsList.map((algo) => [algo, []])));
+                setHistories(Object.fromEntries(algorithmsList.map(algo => [algo, []])));
                 setTurns(0);
                 setLocked(false);
                 setFeedback(null);
@@ -183,12 +183,12 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
               type="number"
               min="1"
               value={maxTurns}
-              onChange={(e) =>
-                setMaxTurns(e.target.value === "" ? "" : Math.max(1, parseInt(e.target.value)))
+              onChange={e =>
+                setMaxTurns(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))
               }
             />
           </label>
-          <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
+          <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
         </div>
         <div className="row gap">
           <button onClick={step} disabled={locked}>
@@ -211,16 +211,14 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
           ))}
         </div>
         {feedback && (
-          <p className={`feedback ${feedback.success ? "hit" : "miss"}`}>
-            {feedback.text}
-          </p>
+          <p className={`feedback ${feedback.success ? 'hit' : 'miss'}`}>{feedback.text}</p>
         )}
         {userLog.length > 0 && (
           <div className="user-log">
             <h4>Letzte Züge</h4>
             <ul>
               {userLog.map((entry, idx) => (
-                <li key={idx} className={entry.success ? "hit" : "miss"}>
+                <li key={idx} className={entry.success ? 'hit' : 'miss'}>
                   {entry.text}
                 </li>
               ))}
@@ -234,7 +232,7 @@ export default function BernoulliBanditUI({ title = "Vergleich von Heizstrategie
         <h3>Ergebnisse</h3>
         <p>
           Gespielte Runden: {turns}
-          {maxTurns !== "" && ` / ${maxTurns}`}
+          {maxTurns !== '' && ` / ${maxTurns}`}
         </p>
         <div className="charts-grid">
           {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}

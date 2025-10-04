@@ -1,36 +1,36 @@
-import { useMemo, useState } from "react";
-import GaussianBandit from "../functions/GaussBandit.js";
-import "../styles/bandit.css";
+import { useMemo, useState } from 'react';
+import GaussianBandit from '../functions/GaussBandit.js';
+import '../styles/bandit.css';
 
-export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gauss-Bandit)" }) {
+export default function GaussBandit({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
   const [strategyNames] = useState([
-    "Konstante Temperatur halten",
-    "Stoßweise aufheizen",
-    "Bedarfsgesteuert (nur bei Kälte)",
-    "Nachtabsenkung mit Morgen-Boost",
+    'Konstante Temperatur halten',
+    'Stoßweise aufheizen',
+    'Bedarfsgesteuert (nur bei Kälte)',
+    'Nachtabsenkung mit Morgen-Boost',
   ]);
   const [sigma] = useState(1.0);
 
   // Maximal erlaubte Züge (kann auch "" = leer sein)
-  const [maxTurns, setMaxTurns] = useState("");
+  const [maxTurns, setMaxTurns] = useState('');
 
   const bandit = useMemo(() => new GaussianBandit(strategyNames, sigma), [strategyNames, sigma]);
   const [history, setHistory] = useState([]);
   const [turns, setTurns] = useState(0);
 
-  const handlePull = (strategyIndex) => {
-    if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return; // Limit beachten
+  const handlePull = strategyIndex => {
+    if (maxTurns !== '' && turns >= parseInt(maxTurns, 10)) return; // Limit beachten
 
     const reward = bandit.pull(strategyIndex);
-    setHistory((prev) => [...prev, { turn: turns + 1, strategyIndex, reward }]);
-    setTurns((t) => t + 1);
+    setHistory(prev => [...prev, { turn: turns + 1, strategyIndex, reward }]);
+    setTurns(t => t + 1);
   };
 
   const handleReset = () => {
     bandit.reset();
     setHistory([]);
     setTurns(0);
-    setMaxTurns(""); // zurück auf "leer"
+    setMaxTurns(''); // zurück auf "leer"
   };
 
   return (
@@ -53,13 +53,13 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
               type="number"
               min="1"
               value={maxTurns}
-              onChange={(e) => {
+              onChange={e => {
                 const val = e.target.value;
-                setMaxTurns(val === "" ? "" : Math.max(1, parseInt(val, 10)));
+                setMaxTurns(val === '' ? '' : Math.max(1, parseInt(val, 10)));
               }}
             />
           </label>
-          <button onClick={() => setMaxTurns("")}>Unbegrenzt</button>
+          <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
         </div>
         <div className="row gap">
           <button onClick={handleReset} className="reset-btn">
@@ -72,11 +72,11 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
       <div className="user-choice">
         <h3>Wähle eine Heizstrategie</h3>
         <div className="strategies-grid">
-          {[...Array(bandit.K).keys()].map((i) => (
+          {[...Array(bandit.K).keys()].map(i => (
             <button
               key={i}
               onClick={() => handlePull(i)}
-              disabled={maxTurns !== "" && turns >= maxTurns}
+              disabled={maxTurns !== '' && turns >= maxTurns}
             >
               {bandit.strategies[i].name}
             </button>
@@ -89,7 +89,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
         <h3>Ergebnisse</h3>
         <p>
           Gespielte Runden: {turns}
-          {maxTurns !== "" && ` / ${maxTurns}`}
+          {maxTurns !== '' && ` / ${maxTurns}`}
         </p>
 
         {/* Tabelle mit empirischen Werten */}
@@ -107,9 +107,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
                 <td>{s.name}</td>
                 <td>{bandit.counts[i]}</td>
                 <td>
-                  {bandit.counts[i]
-                    ? (bandit.sumRewards[i] / bandit.counts[i]).toFixed(2)
-                    : "0.00"}{" "}
+                  {bandit.counts[i] ? (bandit.sumRewards[i] / bandit.counts[i]).toFixed(2) : '0.00'}{' '}
                   kW
                 </td>
               </tr>
@@ -124,8 +122,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
             <ul>
               {history.slice(-5).map((h, i) => (
                 <li key={i}>
-                  Zug {h.turn}: {bandit.strategies[h.strategyIndex].name} →{" "}
-                  {h.reward.toFixed(2)} kW
+                  Zug {h.turn}: {bandit.strategies[h.strategyIndex].name} → {h.reward.toFixed(2)} kW
                 </li>
               ))}
             </ul>
