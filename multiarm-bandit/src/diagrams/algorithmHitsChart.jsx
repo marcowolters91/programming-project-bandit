@@ -1,12 +1,12 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 export function AlgorithmHitsChart({ histories }) {
-  const maxTurns = Math.max(...Object.values(histories).map((arr) => arr.length));
+  const maxTurns = Math.max(...Object.values(histories).map(arr => arr.length));
 
   // Daten vorbereiten: pro Runde kumulierte Treffer pro Algorithmus
   const data = Array.from({ length: maxTurns }, (_, turn) => {
     const entry = { round: turn + 1 };
-    Object.keys(histories).forEach((algo) => {
+    Object.keys(histories).forEach(algo => {
       const hist = histories[algo].slice(0, turn + 1);
       entry[algo] = hist.reduce((sum, h) => sum + h.reward, 0);
     });
@@ -14,7 +14,7 @@ export function AlgorithmHitsChart({ histories }) {
   });
 
   // Farben (für andere Algorithmen rotiert, User fest lila)
-  const colors = ["#10b981", "#ef4444", "#3b82f6", "#f59e0b", "#0ea5e9", "#22c55e", "#8b5cf6"];
+  const colors = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#0ea5e9', '#22c55e', '#8b5cf6'];
 
   return (
     <div>
@@ -29,7 +29,7 @@ export function AlgorithmHitsChart({ histories }) {
           if (histories[algo].length === 0) return null;
 
           // User bekommt immer Lila (#8b5cf6)
-          const color = algo === "User" ? "#8b5cf6" : colors[idx % colors.length];
+          const color = algo === 'User' ? '#8b5cf6' : colors[idx % colors.length];
 
           return (
             <Line

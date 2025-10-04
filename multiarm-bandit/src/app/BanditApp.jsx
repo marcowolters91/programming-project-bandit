@@ -1,10 +1,10 @@
-import { useState } from "react";
-import "../styles/bandit.css";
-import BernoulliBanditUI from "../bandits/BernoulliBandit.jsx";
-import GaussBanditUI from "../bandits/GaussBandit.jsx";
+import { useState } from 'react';
+import '../styles/bandit.css';
+import BernoulliBanditUI from '../bandits/BernoulliBandit.jsx';
+import GaussBanditUI from '../bandits/GaussBandit.jsx';
 
 export default function BanditApp() {
-  const [active, setActive] = useState("bernoulli");
+  const [active, setActive] = useState('bernoulli');
 
   return (
     <div className="layout">
@@ -14,29 +14,24 @@ export default function BanditApp() {
 
       <nav className="nav tabs">
         <button
-          className={`tab ${active === "bernoulli" ? "active" : ""}`}
-          onClick={() => setActive("bernoulli")}
+          className={`tab ${active === 'bernoulli' ? 'active' : ''}`}
+          onClick={() => setActive('bernoulli')}
         >
           Bernoulli
         </button>
         <button
-          className={`tab ${active === "gauss" ? "active" : ""}`}
-          onClick={() => setActive("gauss")}
+          className={`tab ${active === 'gauss' ? 'active' : ''}`}
+          onClick={() => setActive('gauss')}
         >
           Gauss
         </button>
       </nav>
 
       <main className="main">
-        {active === "bernoulli" && (
-          <BernoulliBanditUI
-            title="Bernoulli-Bandit"
-            probabilities={[0.2, 0.5, 0.6, 0.8]}
-          />
+        {active === 'bernoulli' && (
+          <BernoulliBanditUI title="Bernoulli-Bandit" probabilities={[0.2, 0.5, 0.6, 0.8]} />
         )}
-        {active === "gauss" && (
-          <GaussBanditUI title="Gauss-Bandit" />
-        )}
+        {active === 'gauss' && <GaussBanditUI title="Gauss-Bandit" />}
       </main>
 
       <footer className="footer">
