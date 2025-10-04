@@ -22,6 +22,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+      
+      - name: Prettier - Check formatting
+        run: npm run format:check
 
       - name: Linting - Run ESLint
         run: npm run lint -- --max-warnings=0
