@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 import GaussianBandit from "../functions/GaussBandit.js";
 import "../styles/bandit.css";
 
+import NormalDistributionChart from "../diagrams/normalDistributionChart";
+import UserGreedyTrend from "../diagrams/algorithmTrendChart";
+import { greedy } from "../functions/greedy.js";
+
 export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gauss-Bandit)" }) {
   const [strategyNames] = useState([
     "Konstante Temperatur halten",
@@ -10,32 +14,58 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
     "Nachtabsenkung mit Morgen-Boost",
   ]);
   const [sigma] = useState(1.0);
-
-  // Maximal erlaubte Züge (kann auch "" = leer sein)
   const [maxTurns, setMaxTurns] = useState("");
 
-  const bandit = useMemo(() => new GaussianBandit(strategyNames, sigma), [strategyNames, sigma]);
-  const [history, setHistory] = useState([]);
+  const banditUser = useMemo(() => new GaussianBandit(strategyNames, sigma), [strategyNames, sigma]);
+  const banditGreedy = useMemo(() => new GaussianBandit(strategyNames, sigma), [strategyNames, sigma]);
+
   const [turns, setTurns] = useState(0);
+  const [userHistory, setUserHistory] = useState([]);
+  const [greedyHistory, setGreedyHistory] = useState([]);
+
+  const [userSum, setUserSum] = useState(0);
+  const [greedySum, setGreedySum] = useState(0);
+  const [userCount, setUserCount] = useState(0);
+  const [greedyCount, setGreedyCount] = useState(0);
 
   const handlePull = (strategyIndex) => {
-    if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return; // Limit beachten
+    if (maxTurns !== "" && turns >= parseInt(maxTurns, 10)) return;
 
-    const reward = bandit.pull(strategyIndex);
-    setHistory((prev) => [...prev, { turn: turns + 1, strategyIndex, reward }]);
+    const rewardUser = banditUser.pull(strategyIndex);
+    setUserHistory((prev) => [...prev, { turn: turns + 1, strategyIndex, reward: rewardUser }]);
+    setUserSum((s) => s + rewardUser);
+    setUserCount((c) => c + 1);
+
+    const values = banditGreedy.strategies.map((s, i) =>
+      banditGreedy.counts[i] > 0 ? banditGreedy.sumRewards[i] / banditGreedy.counts[i] : 0
+    );
+    const greedyIndex = greedy(values);
+    const rewardGreedy = banditGreedy.pull(greedyIndex);
+    setGreedyHistory((prev) => [
+      ...prev,
+      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
+    ]);
+    setGreedySum((s) => s + rewardGreedy);
+    setGreedyCount((c) => c + 1);
+
     setTurns((t) => t + 1);
   };
 
   const handleReset = () => {
-    bandit.reset();
-    setHistory([]);
+    banditUser.reset();
+    banditGreedy.reset();
     setTurns(0);
-    setMaxTurns(""); // zurück auf "leer"
+    setUserHistory([]);
+    setGreedyHistory([]);
+    setUserSum(0);
+    setGreedySum(0);
+    setUserCount(0);
+    setGreedyCount(0);
+    setMaxTurns("");
   };
 
   return (
     <section className="bandit-dashboard">
-      {/* Header */}
       <header className="dashboard-header">
         <h2>{title}</h2>
         <p className="intro">
@@ -72,13 +102,13 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
       <div className="user-choice">
         <h3>Wähle eine Heizstrategie</h3>
         <div className="strategies-grid">
-          {[...Array(bandit.K).keys()].map((i) => (
+          {[...Array(banditUser.K).keys()].map((i) => (
             <button
               key={i}
               onClick={() => handlePull(i)}
               disabled={maxTurns !== "" && turns >= maxTurns}
             >
-              {bandit.strategies[i].name}
+              {banditUser.strategies[i].name}
             </button>
           ))}
         </div>
@@ -92,7 +122,7 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
           {maxTurns !== "" && ` / ${maxTurns}`}
         </p>
 
-        {/* Tabelle mit empirischen Werten */}
+        {/* Tabelle zeigt nur User-Daten */}
         <table>
           <thead>
             <tr>
@@ -102,13 +132,13 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
             </tr>
           </thead>
           <tbody>
-            {bandit.strategies.map((s, i) => (
+            {banditUser.strategies.map((s, i) => (
               <tr key={i}>
                 <td>{s.name}</td>
-                <td>{bandit.counts[i]}</td>
+                <td>{banditUser.counts[i]}</td>
                 <td>
-                  {bandit.counts[i]
-                    ? (bandit.sumRewards[i] / bandit.counts[i]).toFixed(2)
+                  {banditUser.counts[i]
+                    ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
                     : "0.00"}{" "}
                   kW
                 </td>
@@ -117,19 +147,19 @@ export default function GaussBandit({ title = "Vergleich von Heizstrategien (Gau
           </tbody>
         </table>
 
-        {/* Historie */}
-        {history.length > 0 && (
-          <div className="user-log">
-            <h4>Letzte Züge</h4>
-            <ul>
-              {history.slice(-5).map((h, i) => (
-                <li key={i}>
-                  Zug {h.turn}: {bandit.strategies[h.strategyIndex].name} →{" "}
-                  {h.reward.toFixed(2)} kW
-                </li>
-              ))}
-            </ul>
-          </div>
+        {/* Verlauf User vs. Greedy */}
+        {userHistory.length > 0 && (
+          <UserGreedyTrend userHistory={userHistory} greedyHistory={greedyHistory} />
+        )}
+
+        {/* Normalverteilungen */}
+        {maxTurns !== "" && turns >= maxTurns && (
+          <NormalDistributionChart
+            strategies={[{ name: "User" }, { name: "Greedy" }]}
+            counts={[userCount, greedyCount]}
+            sumRewards={[userSum, greedySum]}
+            sigma={sigma}
+          />
         )}
       </div>
     </section>
