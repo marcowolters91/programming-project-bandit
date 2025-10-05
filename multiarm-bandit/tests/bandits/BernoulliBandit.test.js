@@ -1,4 +1,3 @@
-// tests/bandits/BernoulliBandit.test.js
 import { describe, it, expect, vi } from 'vitest';
 import BernoulliBandit from '../../src/functions/BernoulliBandit.js';
 
