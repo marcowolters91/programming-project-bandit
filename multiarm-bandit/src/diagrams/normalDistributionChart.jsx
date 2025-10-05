@@ -1,10 +1,7 @@
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
 
 function normalPDF(x, mu, sigma) {
-  return (
-    (1 / (sigma * Math.sqrt(2 * Math.PI))) *
-    Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2))
-  );
+  return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
 }
 
 export default function NormalDistributionChart({ strategies, counts, sumRewards, sigma }) {
@@ -31,9 +28,9 @@ export default function NormalDistributionChart({ strategies, counts, sumRewards
   const length = chartsData[0].length;
   for (let j = 0; j < length; j++) {
     let row = { x: chartsData[0][j].x };
-    chartsData.forEach((strategyData) => {
-      Object.keys(strategyData[j]).forEach((key) => {
-        if (key !== "x") {
+    chartsData.forEach(strategyData => {
+      Object.keys(strategyData[j]).forEach(key => {
+        if (key !== 'x') {
           row[key] = strategyData[j][key];
         }
       });
@@ -42,7 +39,7 @@ export default function NormalDistributionChart({ strategies, counts, sumRewards
   }
 
   return (
-    <div style={{ marginTop: "2rem" }}>
+    <div style={{ marginTop: '2rem' }}>
       <h4>Normalverteilungen der Strategien (inkl. User & Greedy)</h4>
       <LineChart width={700} height={350} data={mergedData}>
         <CartesianGrid strokeDasharray="3 3" />
