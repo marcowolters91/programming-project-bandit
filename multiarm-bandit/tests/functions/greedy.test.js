@@ -10,16 +10,13 @@ describe('greedy', () => {
   it('liefert je nach Math.random unterschiedliche Indizes bei mehreren Maxima', () => {
     const successes = [4, 7, 7, 2];
 
-    // Math.random auf 0 setzen → erster Index
     const originalRandom = Math.random;
     Math.random = () => 0.0;
     expect(greedy(successes)).toBe(1);
 
-    // Math.random auf 0.999 setzen → zweiter Index
     Math.random = () => 0.999;
     expect(greedy(successes)).toBe(2);
 
-    // wiederherstellen
     Math.random = originalRandom;
   });
 
