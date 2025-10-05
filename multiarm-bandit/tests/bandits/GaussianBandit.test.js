@@ -5,7 +5,7 @@ describe("GaussianBandit", () => {
   const strategyNames = ["A", "B", "C"];
 
   beforeEach(() => {
-    vi.restoreAllMocks(); // Reset all mocks before each test
+    vi.restoreAllMocks(); // alle Mocks zurücksetzen
   });
 
   it("initialisiert korrekt mit gegebenen Strategien", () => {
