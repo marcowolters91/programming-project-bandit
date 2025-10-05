@@ -62,7 +62,7 @@ describe('GaussianBandit', () => {
 
   it('verwendet korrekt die Normalverteilung im _randn()', () => {
     const bandit = new GaussianBandit(['Demo']);
-    // Mock Math.random so that u=0.25, v=0.75
+    // Mock Math.random, sodass u=0.25, v=0.75
     const mockValues = [0.25, 0.75];
     vi.spyOn(global.Math, 'random').mockImplementation(() => mockValues.shift() ?? 0.9);
     const z = bandit._randn();

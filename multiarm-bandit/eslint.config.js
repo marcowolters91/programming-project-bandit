@@ -21,7 +21,10 @@ export default defineConfig([
     },
     languageOptions: {
       ecmaVersion: 'latest',
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+    },
       parserOptions: {
         ecmaFeatures: { jsx: true },
         sourceType: 'module',
