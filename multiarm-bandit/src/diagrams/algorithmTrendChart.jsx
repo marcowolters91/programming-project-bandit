@@ -1,4 +1,4 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 export default function UserGreedyTrend({ userHistory, greedyHistory }) {
   const data = userHistory.map((u, i) => ({
@@ -12,7 +12,7 @@ export default function UserGreedyTrend({ userHistory, greedyHistory }) {
   }
 
   return (
-    <div style={{ marginTop: "2rem" }}>
+    <div style={{ marginTop: '2rem' }}>
       <h4>Leistungsverlauf pro Runde (User vs. Greedy)</h4>
       <LineChart width={700} height={350} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
