@@ -5,7 +5,7 @@ import '../styles/bandit.css';
 import { ProbabilityChart } from '../diagrams/probabilityChart.jsx';
 import { AlgorithmHitsChart } from '../diagrams/algorithmHitsChart.jsx';
 
-export default function GaussBanditUI({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
+export default function GaussBanditUI() {
   // --- Basiszustand ---
   const [armsCount, setArmsCount] = useState(4);
   const [armNames, setArmNames] = useState(generateArmNames(4));
