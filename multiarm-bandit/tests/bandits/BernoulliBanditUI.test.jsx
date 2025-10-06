@@ -6,9 +6,7 @@ import BernoulliBanditUI from '../../src/bandits/BernoulliBandit.jsx';
 describe('BernoulliBanditUI', () => {
   it('rendert den Titel korrekt', () => {
     render(<BernoulliBanditUI />);
-    expect(
-      screen.getByText(/Vergleich von Heizstrategien/i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Vergleich von Heizstrategien/i)).toBeInTheDocument();
   });
 
   it('zeigt Eingabefelder für Arme und Runden an', () => {
@@ -43,15 +41,15 @@ describe('BernoulliBanditUI', () => {
       'Konstante Temperatur halten',
       'Stoßweise aufheizen',
       'Bedarfsgesteuert',
-      'Nachtabsenkung'
+      'Nachtabsenkung',
     ];
 
-    const strategyFound = strategyButtons.some((btn) =>
-      strategyLabels.some((label) => btn.textContent.includes(label))
+    const strategyFound = strategyButtons.some(btn =>
+      strategyLabels.some(label => btn.textContent.includes(label))
     );
 
     expect(strategyFound).toBe(true);
-    fireEvent.click(strategyButtons.find((btn) => btn.textContent.includes('Konstante')));
+    fireEvent.click(strategyButtons.find(btn => btn.textContent.includes('Konstante')));
   });
 
   it('zeigt nach mehreren Zügen das Effizienz-Diagramm an', async () => {
@@ -63,7 +61,7 @@ describe('BernoulliBanditUI', () => {
     }
 
     await waitFor(() => {
-      const efficiencyTexts = screen.queryAllByText((content) =>
+      const efficiencyTexts = screen.queryAllByText(content =>
         /Ergebnisse|Effizienz|Treffer pro Algorithmus/i.test(content)
       );
       expect(efficiencyTexts.length).toBeGreaterThan(0);
