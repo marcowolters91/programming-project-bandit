@@ -6,9 +6,7 @@ import NormalDistributionChart from '../diagrams/normalDistributionChart';
 import UserGreedyTrend from '../diagrams/algorithmTrendChart';
 import { greedy } from '../functions/greedy.js';
 
-export default function GaussBandit({
-  title = 'Vergleich von Heizstrategien (Gauss-Bandit)',
-}) {
+export default function GaussBandit({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
   // --- Logik unverändert ---
   const [strategyNames] = useState([
     'Konstante Temperatur halten',
@@ -40,34 +38,29 @@ export default function GaussBandit({
   const maxTurnsN = maxTurns === '' ? null : Number(maxTurns);
   const reachedMax = maxTurnsN != null && turns >= maxTurnsN;
 
-  const handlePull = (strategyIndex) => {
+  const handlePull = strategyIndex => {
     if (reachedMax) return;
 
     // User
     const rewardUser = banditUser.pull(strategyIndex);
-    setUserHistory((prev) => [
-      ...prev,
-      { turn: turns + 1, strategyIndex, reward: rewardUser },
-    ]);
-    setUserSum((s) => s + rewardUser);
-    setUserCount((c) => c + 1);
+    setUserHistory(prev => [...prev, { turn: turns + 1, strategyIndex, reward: rewardUser }]);
+    setUserSum(s => s + rewardUser);
+    setUserCount(c => c + 1);
 
     // Greedy
     const values = banditGreedy.strategies.map((_, i) =>
-      banditGreedy.counts[i] > 0
-        ? banditGreedy.sumRewards[i] / banditGreedy.counts[i]
-        : 0
+      banditGreedy.counts[i] > 0 ? banditGreedy.sumRewards[i] / banditGreedy.counts[i] : 0
     );
     const greedyIndex = greedy(values);
     const rewardGreedy = banditGreedy.pull(greedyIndex);
-    setGreedyHistory((prev) => [
+    setGreedyHistory(prev => [
       ...prev,
       { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
     ]);
-    setGreedySum((s) => s + rewardGreedy);
-    setGreedyCount((c) => c + 1);
+    setGreedySum(s => s + rewardGreedy);
+    setGreedyCount(c => c + 1);
 
-    setTurns((t) => t + 1);
+    setTurns(t => t + 1);
   };
 
   const handleReset = () => {
@@ -116,7 +109,7 @@ export default function GaussBandit({
                     type="number"
                     min="1"
                     value={maxTurns}
-                    onChange={(e) => {
+                    onChange={e => {
                       const v = e.target.value;
                       setMaxTurns(v === '' ? '' : Math.max(1, parseInt(v, 10)));
                     }}
@@ -154,10 +147,7 @@ export default function GaussBandit({
               <div className="charts-grid">
                 {/* Legende bleibt in der Card */}
                 <div style={{ position: 'relative' }}>
-                  <UserGreedyTrend
-                    userHistory={userHistory}
-                    greedyHistory={greedyHistory}
-                  />
+                  <UserGreedyTrend userHistory={userHistory} greedyHistory={greedyHistory} />
                 </div>
 
                 {showNormalChart && (
