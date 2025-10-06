@@ -12,19 +12,13 @@ export default function BanditApp() {
         <h1>Multiarm Bandit Suite</h1>
       </header>
 
-      <nav className="nav tabs">
-        <button
-          className={`tab ${active === 'bernoulli' ? 'active' : ''}`}
-          onClick={() => setActive('bernoulli')}
-        >
-          Bernoulli
-        </button>
-        <button
-          className={`tab ${active === 'gauss' ? 'active' : ''}`}
-          onClick={() => setActive('gauss')}
-        >
-          Gauss
-        </button>
+      <nav
+        className="bandit-tabs"
+        data-active={active === 'bernoulli' ? 1 : active === 'gauss' ? 2 : 1}
+      >
+        <button className={`tab ${active === 'bernoulli' ? 'active' : ''}`} onClick={() => setActive('bernoulli')}>Bernoulli</button>
+        <button className={`tab ${active === 'gauss' ? 'active' : ''}`} onClick={() => setActive('gauss')}>Gauss</button>
+        {/*Template:  <button className={`tab ${active === 'active state' ? 'active' : ''}`} onClick={() => setActive('active state')}>Name</button> */}
       </nav>
 
       <main className="main">

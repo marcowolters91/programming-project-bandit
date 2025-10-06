@@ -146,99 +146,91 @@ export default function BernoulliBanditUI({
     setUserLog([]);
   };
 
-  return (
-    <section className="bandit-dashboard">
+return (
+  <section className="bandit-dashboard">
+    <div className="bandit-shell">
       <header className="dashboard-header">
-        <h2>{title}</h2>
+        <h2>Bernoulli-Bandit</h2>
         <p className="intro">Teste verschiedene Heizstrategien und vergleiche ihre Effizienz.</p>
       </header>
 
-      {/* Control Panel */}
-      <div className="control-panel">
-        <h3>Simulationseinstellungen</h3>
-        <div className="row gap">
-          <label>
-            Anzahl Arme:
-            <input
-              type="number"
-              min="2"
-              max="26"
-              value={armsCount}
-              onChange={e => {
-                const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
-                setArmsCount(count);
-                setArmNames(generateArmNames(count));
-                setProbabilities(generateProbabilities(count));
-                setHistories(Object.fromEntries(algorithmsList.map(algo => [algo, []])));
-                setTurns(0);
-                setLocked(false);
-                setFeedback(null);
-                setUserLog([]);
-              }}
-            />
-          </label>
-          <label>
-            Max. Runden:
-            <input
-              type="number"
-              min="1"
-              value={maxTurns}
-              onChange={e =>
-                setMaxTurns(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))
-              }
-            />
-          </label>
-          <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
-        </div>
-        <div className="row gap">
-          <button onClick={step} disabled={locked}>
-            Nächste Runde (Automatisch)
-          </button>
-          <button onClick={reset} className="reset-btn">
-            Reset
-          </button>
-        </div>
-      </div>
-
-      {/* Strategie Auswahl */}
-      <div className="user-choice">
-        <h3>Wähle eine Heizstrategie</h3>
-        <div className="strategies-grid">
-          {armNames.map((name, i) => (
-            <button key={i} onClick={() => userStep(i)} disabled={locked}>
-              {name}
-            </button>
-          ))}
-        </div>
-        {feedback && (
-          <p className={`feedback ${feedback.success ? 'hit' : 'miss'}`}>{feedback.text}</p>
-        )}
-        {userLog.length > 0 && (
-          <div className="user-log">
-            <h4>Letzte Züge</h4>
-            <ul>
-              {userLog.map((entry, idx) => (
-                <li key={idx} className={entry.success ? 'hit' : 'miss'}>
-                  {entry.text}
-                </li>
-              ))}
-            </ul>
+      <main className="main">
+        {/* Linke Spalte */}
+        <div className="left-col">
+          <div className="control-panel block">
+            <h3>Simulationseinstellungen</h3>
+            <div className="row">
+              <label>
+                Anzahl Arme:
+                <input
+                  type="number" min="2" max="26" value={armsCount}
+                  onChange={e => {
+                    const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
+                    setArmsCount(count);
+                    setArmNames(generateArmNames(count));
+                    setProbabilities(generateProbabilities(count));
+                    setHistories(Object.fromEntries(algorithmsList.map(a => [a, []])));
+                    setTurns(0); setLocked(false); setFeedback(null); setUserLog([]); setMaxTurns('');
+                  }}
+                />
+              </label>
+              <label>
+                Max. Runden:
+                <input
+                  type="number" min="1" value={maxTurns}
+                  onChange={e => setMaxTurns(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))}
+                />
+              </label>
+              <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
+            </div>
+            <div className="row">
+              <button onClick={step} disabled={locked}>Nächste Runde (Automatisch)</button>
+              <button className="reset-btn" onClick={reset}>Reset</button>
+            </div>
           </div>
-        )}
-      </div>
 
-      {/* Diagramme */}
-      <div className="charts-section">
-        <h3>Ergebnisse</h3>
-        <p>
-          Gespielte Runden: {turns}
-          {maxTurns !== '' && ` / ${maxTurns}`}
-        </p>
-        <div className="charts-grid">
-          {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}
-          <AlgorithmHitsChart histories={histories} />
+          <div className="user-choice block">
+            <h3>Wähle eine Heizstrategie</h3>
+            <div className="strategies-grid">
+              {armNames.map((name, i) => (
+                <button key={i} onClick={() => userStep(i)} disabled={locked}>{name}</button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
-  );
+
+        <div className="right-col">
+          <div className="charts-card">
+            <div className="charts-grid">
+              {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}
+              <AlgorithmHitsChart histories={histories} />
+            </div>
+          </div>
+
+          {feedback && (
+            <p className={`feedback ${feedback.success ? 'hit' : 'miss'}`}>{feedback.text}</p>
+          )}
+
+          {userLog.length > 0 && (
+            <div className="user-log">
+              <h4>Letzte Züge</h4>
+              <ul>
+                {userLog.map((entry, idx) => (
+                  <li key={idx} className={entry.success ? 'hit' : 'miss'}>
+                    {entry.text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="charts-section">
+            <h3>Ergebnisse</h3>
+            <p>Gespielte Runden: {turns}{maxTurns !== '' && ` / ${maxTurns}`}</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+);
 }
