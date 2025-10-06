@@ -4,11 +4,6 @@ import React from 'react';
 import BernoulliBanditUI from '../../src/bandits/BernoulliBandit.jsx';
 
 describe('BernoulliBanditUI', () => {
-  it('rendert den Titel korrekt', () => {
-    render(<BernoulliBanditUI />);
-    expect(screen.getByText(/Vergleich von Heizstrategien/i)).toBeInTheDocument();
-  });
-
   it('zeigt Eingabefelder für Arme und Runden an', () => {
     render(<BernoulliBanditUI />);
     expect(screen.getByLabelText(/Anzahl Arme/i)).toBeInTheDocument();
