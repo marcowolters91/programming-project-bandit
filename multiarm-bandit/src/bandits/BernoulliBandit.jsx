@@ -12,9 +12,7 @@ import { posterior } from '../functions/posterior';
 import { ProbabilityChart } from '../diagrams/probabilityChart.jsx';
 import { AlgorithmHitsChart } from '../diagrams/algorithmHitsChart.jsx';
 
-export default function BernoulliBanditUI({
-  title = 'Vergleich von Heizstrategien (Bernoulli-Bandit)',
-}) {
+export default function BernoulliBanditUI() {
   const [armsCount, setArmsCount] = useState(4);
   const [armNames, setArmNames] = useState(generateArmNames(4));
   const [maxTurns, setMaxTurns] = useState('');
