@@ -35,4 +35,12 @@ export default defineConfig([
       'prettier/prettier': 'error',
     },
   },
+  {
+    files: ['tests/**/*.js', 'tests/**/*.jsx'],
+    languageOptions: {
+      globals: {
+        ...globals.vitest,
+      },
+    },
+  },
 ]);
