@@ -5,9 +5,7 @@ import '../styles/bandit.css';
 import { ProbabilityChart } from '../diagrams/probabilityChart.jsx';
 import { AlgorithmHitsChart } from '../diagrams/algorithmHitsChart.jsx';
 
-export default function GaussBanditUI({
-  title = 'Vergleich von Heizstrategien (Gauss-Bandit)',
-}) {
+export default function GaussBanditUI({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
   // --- Basiszustand ---
   const [armsCount, setArmsCount] = useState(4);
   const [armNames, setArmNames] = useState(generateArmNames(4));
@@ -36,7 +34,10 @@ export default function GaussBanditUI({
       'Nachtabsenkung mit Morgen-Boost',
     ];
     if (count <= 4) return base.slice(0, count);
-    const extra = Array.from({ length: count - 4 }, (_, i) => `Heizstrategie ${String.fromCharCode(65 + i)}`);
+    const extra = Array.from(
+      { length: count - 4 },
+      (_, i) => `Heizstrategie ${String.fromCharCode(65 + i)}`
+    );
     return [...base, ...extra];
   }
 
@@ -58,7 +59,8 @@ export default function GaussBanditUI({
   }
   function sampleNormal(mu, sigma) {
     // Box–Muller
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
     const z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -92,7 +94,7 @@ export default function GaussBanditUI({
     // History (für Diagramm) – wir speichern numerischen reward
     setHistories(prev => ({
       ...prev,
-      User: [...prev.User, { arm, reward }]
+      User: [...prev.User, { arm, reward }],
     }));
 
     const msg = `Zug ${turns + 1}: ${armNames[arm]} → ${reward.toFixed(2)} kW`;
@@ -123,112 +125,136 @@ export default function GaussBanditUI({
   };
 
   // --- Render ---
-return (
-  <section className="bandit-dashboard">
+  return (
+    <section className="bandit-dashboard">
+      <div className="bandit-shell">
+        <header className="dashboard-header">
+          <h2>Gauss-Bandit</h2>
+          <p className="intro">
+            Analysiere verschiedene Heizstrategien auf Basis einer Gaußverteilung.
+          </p>
+        </header>
 
-  <div className="bandit-shell">
-    <header className="dashboard-header">
-      <h2>Gauss-Bandit</h2>
-      <p className="intro">Analysiere verschiedene Heizstrategien auf Basis einer Gaußverteilung.</p>
-    </header>
+        <main className="main">
+          <div className="left-col">
+            <div className="control-panel block">
+              <h3>Simulationseinstellungen</h3>
+              <div className="row">
+                <label>
+                  Anzahl Arme:
+                  <input
+                    type="number"
+                    min="2"
+                    max="26"
+                    value={armsCount}
+                    onChange={e => {
+                      const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
+                      setArmsCount(count);
+                      setArmNames(generateArmNames(count));
+                      setTurns(0);
+                      setLocked(false);
+                      setFeedback(null);
+                      setUserLog([]);
+                      setMaxTurns('');
+                    }}
+                  />
+                </label>
+                <label>
+                  Max. Runden:
+                  <input
+                    type="number"
+                    min="1"
+                    value={maxTurns}
+                    onChange={e =>
+                      setMaxTurns(
+                        e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value))
+                      )
+                    }
+                  />
+                </label>
+                <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
+              </div>
+              <div className="row">
+                <button onClick={step} disabled={locked}>
+                  Nächste Runde (Automatisch)
+                </button>
+                <button className="reset-btn" onClick={reset}>
+                  Reset
+                </button>
+              </div>
+            </div>
 
-    <main className="main">
-      <div className="left-col">
-        <div className="control-panel block">
-          <h3>Simulationseinstellungen</h3>
-          <div className="row">
-            <label>
-              Anzahl Arme:
-              <input
-                type="number" min="2" max="26" value={armsCount}
-                onChange={e => {
-                  const count = Math.min(26, Math.max(2, parseInt(e.target.value)));
-                  setArmsCount(count);
-                  setArmNames(generateArmNames(count));
-                  setTurns(0); setLocked(false); setFeedback(null); setUserLog([]); setMaxTurns('');
-                }}
-              />
-            </label>
-            <label>
-              Max. Runden:
-              <input
-                type="number" min="1" value={maxTurns}
-                onChange={e => setMaxTurns(e.target.value === '' ? '' : Math.max(1, parseInt(e.target.value)))}
-              />
-            </label>
-            <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
+            <div className="user-choice block">
+              <h3>Wähle eine Heizstrategie</h3>
+              <div className="strategies-grid">
+                {armNames.map((name, i) => (
+                  <button key={i} onClick={() => userStep(i)} disabled={locked}>
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="row">
-            <button onClick={step} disabled={locked}>Nächste Runde (Automatisch)</button>
-            <button className="reset-btn" onClick={reset}>Reset</button>
-          </div>
-        </div>
 
-        <div className="user-choice block">
-          <h3>Wähle eine Heizstrategie</h3>
-          <div className="strategies-grid">
-            {armNames.map((name, i) => (
-              <button key={i} onClick={() => userStep(i)} disabled={locked}>{name}</button>
-            ))}
+          <div className="right-col">
+            <div className="charts-card">
+              <div className="charts-grid">
+                {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}
+                <AlgorithmHitsChart histories={histories} />
+              </div>
+            </div>
+
+            {feedback && (
+              <p className={`feedback ${feedback.success ? 'hit' : 'miss'}`}>{feedback.text}</p>
+            )}
+
+            {userLog.length > 0 && (
+              <div className="user-log">
+                <h4>Letzte Züge</h4>
+                <ul>
+                  {userLog.map((entry, idx) => (
+                    <li key={idx} className={entry.success ? 'hit' : 'miss'}>
+                      {entry.text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="charts-section">
+              <h3>Ergebnisse</h3>
+              <p>
+                Gespielte Runden: {turns}
+                {maxTurns !== '' && ` / ${maxTurns}`}
+              </p>
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Strategie</th>
+                    <th>Anzahl Züge</th>
+                    <th>Durchschnittsleistung</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {banditUser.strategies.map((s, i) => (
+                    <tr key={i}>
+                      <td>{s.name}</td>
+                      <td>{banditUser.counts[i]}</td>
+                      <td>
+                        {banditUser.counts[i]
+                          ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
+                          : '0.00'}{' '}
+                        kW
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </main>
       </div>
-
-      <div className="right-col">
-        <div className="charts-card">
-          <div className="charts-grid">
-            {locked && <ProbabilityChart probabilities={probabilities} armNames={armNames} />}
-            <AlgorithmHitsChart histories={histories} />
-          </div>
-        </div>
-
-        {feedback && (
-          <p className={`feedback ${feedback.success ? 'hit' : 'miss'}`}>{feedback.text}</p>
-        )}
-
-        {userLog.length > 0 && (
-          <div className="user-log">
-            <h4>Letzte Züge</h4>
-            <ul>
-              {userLog.map((entry, idx) => (
-                <li key={idx} className={entry.success ? 'hit' : 'miss'}>
-                  {entry.text}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <div className="charts-section">
-          <h3>Ergebnisse</h3>
-          <p>Gespielte Runden: {turns}{maxTurns !== '' && ` / ${maxTurns}`}</p>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Strategie</th>
-                <th>Anzahl Züge</th>
-                <th>Durchschnittsleistung</th>
-              </tr>
-            </thead>
-            <tbody>
-              {banditUser.strategies.map((s, i) => (
-                <tr key={i}>
-                  <td>{s.name}</td>
-                  <td>{banditUser.counts[i]}</td>
-                  <td>
-                    {banditUser.counts[i]
-                      ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
-                      : '0.00'} kW
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
-  </div>
-</section>
-);
+    </section>
+  );
 }
