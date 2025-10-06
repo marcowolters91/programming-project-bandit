@@ -6,7 +6,7 @@ import NormalDistributionChart from '../diagrams/normalDistributionChart';
 import UserGreedyTrend from '../diagrams/algorithmTrendChart';
 import { greedy } from '../functions/greedy.js';
 
-export default function GaussBandit({ title = 'Vergleich von Heizstrategien (Gauss-Bandit)' }) {
+export default function GaussBandit() {
   // --- Logik unverändert ---
   const [strategyNames] = useState([
     'Konstante Temperatur halten',
