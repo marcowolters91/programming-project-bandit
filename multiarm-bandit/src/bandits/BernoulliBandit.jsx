@@ -71,7 +71,7 @@ export default function BernoulliBanditUI({
         return greedy(values);
       }
       case 'Epsilon':
-        return epsilonGreedy(successes, armsCount, epsilon);
+        return epsilonGreedy(successes, armsCount, epsilon, n_i);
       case 'UCB':
         return ucb(successes, n_i, total);
       case 'Posterior':
