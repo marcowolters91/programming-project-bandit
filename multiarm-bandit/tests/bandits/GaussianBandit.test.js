@@ -9,31 +9,35 @@ describe('GaussianBandit', () => {
   });
 
   it('initialisiert korrekt mit gegebenen Strategien', () => {
-    const bandit = new GaussianBandit(strategyNames, 1.5);
+    vi.spyOn(global.Math, 'random').mockReturnValue(0.5); // deterministisch
+    const bandit = new GaussianBandit(strategyNames);
     expect(bandit.K).toBe(3);
-    expect(bandit.sigma).toBe(1.5);
     expect(bandit.strategies).toHaveLength(3);
     expect(bandit.counts).toEqual([0, 0, 0]);
     expect(bandit.sumRewards).toEqual([0, 0, 0]);
     expect(typeof bandit.strategies[0].mean).toBe('number');
+    expect(typeof bandit.strategies[0].sigma).toBe('number');
   });
 
-  it('erzeugt unterschiedliche zufällige Mittelwerte zwischen 3 und 10', () => {
+  it('erzeugt deterministische Mittelwerte und sigma', () => {
     vi.spyOn(global.Math, 'random').mockReturnValue(0.5);
-    const bandit = new GaussianBandit(['X'], 1.0);
-    // randomMean = 3 + 0.5 * (10 - 3) = 6.5
+    const bandit = new GaussianBandit(['X']);
+    // mean = 3 + 0.5 * 7 = 6.5
     expect(bandit.strategies[0].mean).toBeCloseTo(6.5, 5);
+    // sigma = 0.5 + 0.5 * 1.5 = 1.25
+    expect(bandit.strategies[0].sigma).toBeCloseTo(1.25, 5);
   });
 
   it('liefert Rewards, die sich um den Mittelwert bewegen', () => {
-    const bandit = new GaussianBandit(['Test'], 0);
-    // sigma = 0 → reward == mean
+    const bandit = new GaussianBandit(['Test']);
+    vi.spyOn(bandit, '_randn').mockReturnValue(0);
     const reward = bandit.pull(0);
     expect(reward).toBeCloseTo(bandit.strategies[0].mean, 10);
   });
 
   it('erhöht Zähler und Summen korrekt nach jedem Pull', () => {
     const bandit = new GaussianBandit(strategyNames);
+    vi.spyOn(bandit, '_randn').mockReturnValue(1); // deterministisch
     const reward = bandit.pull(1);
     expect(bandit.counts[1]).toBe(1);
     expect(bandit.sumRewards[1]).toBeCloseTo(reward, 10);
@@ -43,6 +47,7 @@ describe('GaussianBandit', () => {
 
   it('wirft keinen Fehler bei mehrfachen Zügen', () => {
     const bandit = new GaussianBandit(strategyNames);
+    vi.spyOn(bandit, '_randn').mockReturnValue(0);
     expect(() => {
       for (let i = 0; i < 5; i++) bandit.pull(2);
     }).not.toThrow();
@@ -51,6 +56,7 @@ describe('GaussianBandit', () => {
 
   it('setzt interne Zustände korrekt mit reset() zurück', () => {
     const bandit = new GaussianBandit(strategyNames);
+    vi.spyOn(bandit, '_randn').mockReturnValue(0);
     bandit.pull(0);
     bandit.pull(1);
     bandit.reset();
@@ -66,14 +72,13 @@ describe('GaussianBandit', () => {
     const mockValues = [0.25, 0.75];
     vi.spyOn(global.Math, 'random').mockImplementation(() => mockValues.shift() ?? 0.9);
     const z = bandit._randn();
-    // Erwartung: nur prüfen, dass es eine endliche Zahl ist
     expect(Number.isFinite(z)).toBe(true);
   });
 
   it('berechnet _sampleReward basierend auf mean und sigma', () => {
-    const bandit = new GaussianBandit(['Demo'], 2);
+    const bandit = new GaussianBandit(['Demo']);
     vi.spyOn(bandit, '_randn').mockReturnValue(1.5);
     const result = bandit._sampleReward(0);
-    expect(result).toBeCloseTo(bandit.strategies[0].mean + 1.5 * 2, 5);
+    expect(result).toBeCloseTo(bandit.strategies[0].mean + 1.5 * bandit.strategies[0].sigma, 5);
   });
 });
