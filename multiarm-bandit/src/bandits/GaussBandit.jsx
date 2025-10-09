@@ -41,15 +41,26 @@ export default function GaussBandit() {
     );
     const greedyIndex = greedy(valuesGreedy);
     const rewardGreedy = banditGreedy.pull(greedyIndex);
-    setGreedyHistory(prev => [...prev, { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy }]);
+    setGreedyHistory(prev => [
+      ...prev,
+      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
+    ]);
 
     // Epsilon-Greedy
     const valuesEps = banditEpsilon.strategies.map((_, i) =>
       banditEpsilon.counts[i] > 0 ? banditEpsilon.sumRewards[i] / banditEpsilon.counts[i] : 0
     );
-    const epsIndex = epsilonGreedy(valuesEps, banditEpsilon.strategies.length, 0.1, banditEpsilon.counts);
+    const epsIndex = epsilonGreedy(
+      valuesEps,
+      banditEpsilon.strategies.length,
+      0.1,
+      banditEpsilon.counts
+    );
     const rewardEps = banditEpsilon.pull(epsIndex);
-    setEpsilonHistory(prev => [...prev, { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps }]);
+    setEpsilonHistory(prev => [
+      ...prev,
+      { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps },
+    ]);
 
     setTurns(t => t + 1);
   };

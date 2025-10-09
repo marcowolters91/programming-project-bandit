@@ -4,7 +4,7 @@ export default class GaussianBandit {
 
     this.strategies = strategyNames.map(name => ({
       name,
-      mean: 3 + Math.random() * 7,      
+      mean: 3 + Math.random() * 7,
       sigma: 0.5 + Math.random() * 1.5,
     }));
 
@@ -36,7 +36,8 @@ export default class GaussianBandit {
   }
 
   _randn() {
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
