@@ -1,10 +1,11 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-export default function UserGreedyTrend({ userHistory, greedyHistory }) {
+export default function UserGreedyTrend({ userHistory, greedyHistory, epsilonHistory }) {
   const data = userHistory.map((u, i) => ({
     Runde: u.turn,
     User: u.reward,
     Greedy: greedyHistory[i]?.reward ?? null,
+    EpsilonGreedy: epsilonHistory[i]?.reward ?? null,
   }));
 
   if (data.length === 0) {
@@ -13,7 +14,7 @@ export default function UserGreedyTrend({ userHistory, greedyHistory }) {
 
   return (
     <div style={{ marginTop: '2rem' }}>
-      <h4>Leistungsverlauf pro Runde (User vs. Greedy)</h4>
+      <h4>Leistungsverlauf pro Runde (User vs. Greedy vs. ε-Greedy)</h4>
       <LineChart width={700} height={350} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="Runde" />
@@ -22,6 +23,7 @@ export default function UserGreedyTrend({ userHistory, greedyHistory }) {
         <Legend />
         <Line type="monotone" dataKey="User" stroke="#82ca9d" dot={false} />
         <Line type="monotone" dataKey="Greedy" stroke="#8884d8" dot={false} />
+        <Line type="monotone" dataKey="EpsilonGreedy" stroke="#ff7300" dot={false} />
       </LineChart>
     </div>
   );

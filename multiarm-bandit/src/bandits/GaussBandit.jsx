@@ -5,35 +5,25 @@ import '../styles/bandit.css';
 import NormalDistributionChart from '../diagrams/normalDistributionChart';
 import UserGreedyTrend from '../diagrams/algorithmTrendChart';
 import { greedy } from '../functions/greedy.js';
+import { epsilonGreedy } from '../functions/epsilonGreedy.js';
 
 export default function GaussBandit() {
-  // --- Logik unverändert ---
   const [strategyNames] = useState([
     'Konstante Temperatur halten',
     'Stoßweise aufheizen',
     'Bedarfsgesteuert (nur bei Kälte)',
     'Nachtabsenkung mit Morgen-Boost',
   ]);
-  const [sigma] = useState(1.0);
-  const [maxTurns, setMaxTurns] = useState(''); // '' = unbegrenzt
 
-  const banditUser = useMemo(
-    () => new GaussianBandit(strategyNames, sigma),
-    [strategyNames, sigma]
-  );
-  const banditGreedy = useMemo(
-    () => new GaussianBandit(strategyNames, sigma),
-    [strategyNames, sigma]
-  );
+  const banditUser = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
+  const banditGreedy = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
+  const banditEpsilon = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
 
   const [turns, setTurns] = useState(0);
+  const [maxTurns, setMaxTurns] = useState('');
   const [userHistory, setUserHistory] = useState([]);
   const [greedyHistory, setGreedyHistory] = useState([]);
-
-  const [userSum, setUserSum] = useState(0);
-  const [greedySum, setGreedySum] = useState(0);
-  const [userCount, setUserCount] = useState(0);
-  const [greedyCount, setGreedyCount] = useState(0);
+  const [epsilonHistory, setEpsilonHistory] = useState([]);
 
   const maxTurnsN = maxTurns === '' ? null : Number(maxTurns);
   const reachedMax = maxTurnsN != null && turns >= maxTurnsN;
@@ -44,21 +34,22 @@ export default function GaussBandit() {
     // User
     const rewardUser = banditUser.pull(strategyIndex);
     setUserHistory(prev => [...prev, { turn: turns + 1, strategyIndex, reward: rewardUser }]);
-    setUserSum(s => s + rewardUser);
-    setUserCount(c => c + 1);
 
     // Greedy
-    const values = banditGreedy.strategies.map((_, i) =>
+    const valuesGreedy = banditGreedy.strategies.map((_, i) =>
       banditGreedy.counts[i] > 0 ? banditGreedy.sumRewards[i] / banditGreedy.counts[i] : 0
     );
-    const greedyIndex = greedy(values);
+    const greedyIndex = greedy(valuesGreedy);
     const rewardGreedy = banditGreedy.pull(greedyIndex);
-    setGreedyHistory(prev => [
-      ...prev,
-      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
-    ]);
-    setGreedySum(s => s + rewardGreedy);
-    setGreedyCount(c => c + 1);
+    setGreedyHistory(prev => [...prev, { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy }]);
+
+    // Epsilon-Greedy
+    const valuesEps = banditEpsilon.strategies.map((_, i) =>
+      banditEpsilon.counts[i] > 0 ? banditEpsilon.sumRewards[i] / banditEpsilon.counts[i] : 0
+    );
+    const epsIndex = epsilonGreedy(valuesEps, banditEpsilon.strategies.length, 0.1, banditEpsilon.counts);
+    const rewardEps = banditEpsilon.pull(epsIndex);
+    setEpsilonHistory(prev => [...prev, { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps }]);
 
     setTurns(t => t + 1);
   };
@@ -66,23 +57,18 @@ export default function GaussBandit() {
   const handleReset = () => {
     banditUser.reset();
     banditGreedy.reset();
+    banditEpsilon.reset();
     setTurns(0);
     setUserHistory([]);
     setGreedyHistory([]);
-    setUserSum(0);
-    setGreedySum(0);
-    setUserCount(0);
-    setGreedyCount(0);
+    setEpsilonHistory([]);
     setMaxTurns('');
   };
 
   const showNormalChart = reachedMax;
-  const safeCounts = [Number(userCount) || 0, Number(greedyCount) || 0];
-  const safeSums = [Number(userSum) || 0, Number(greedySum) || 0];
 
   return (
     <section className="bandit-dashboard">
-      {/* exakt wie Bernoulli */}
       <div className="bandit-shell">
         <header className="dashboard-header">
           <h2>Gauss-Bandit</h2>
@@ -92,17 +78,14 @@ export default function GaussBandit() {
         </header>
 
         <main className="main">
-          {/* Linke Spalte */}
           <div className="left-col">
             <div className="control-panel block">
               <h3>Simulationseinstellungen</h3>
-
               <div className="row">
                 <label>
                   Anzahl Arme:
                   <input type="number" value={strategyNames.length} disabled />
                 </label>
-
                 <label>
                   Max. Runden:
                   <input
@@ -115,14 +98,9 @@ export default function GaussBandit() {
                     }}
                   />
                 </label>
-
                 <button onClick={() => setMaxTurns('')}>Unbegrenzt</button>
               </div>
-
               <div className="row">
-                {/*<button onClick={() => handlePull(0)} disabled={reachedMax}>
-                  Nächste Runde (Automatisch)
-                </button>*/}
                 <button onClick={handleReset} className="reset-btn">
                   Reset
                 </button>
@@ -141,21 +119,22 @@ export default function GaussBandit() {
             </div>
           </div>
 
-          {/* Rechte Spalte */}
           <div className="right-col">
             <div className="charts-card">
               <div className="charts-grid">
-                {/* Legende bleibt in der Card */}
                 <div style={{ position: 'relative' }}>
-                  <UserGreedyTrend userHistory={userHistory} greedyHistory={greedyHistory} />
+                  <UserGreedyTrend
+                    userHistory={userHistory}
+                    greedyHistory={greedyHistory}
+                    epsilonHistory={epsilonHistory}
+                  />
                 </div>
 
                 {showNormalChart && (
                   <NormalDistributionChart
-                    strategies={[{ name: 'User' }, { name: 'Greedy' }]}
-                    counts={safeCounts}
-                    sumRewards={safeSums}
-                    sigma={sigma}
+                    strategies={strategyNames.map(name => ({ name }))}
+                    counts={banditUser.counts}
+                    bandit={banditUser}
                   />
                 )}
               </div>
