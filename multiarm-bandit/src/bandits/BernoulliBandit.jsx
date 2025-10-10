@@ -19,7 +19,7 @@ export default function BernoulliBanditUI() {
   const [feedback, setFeedback] = useState(null);
   const [userLog, setUserLog] = useState([]);
 
-  const generateProbabilities = (count) =>
+  const generateProbabilities = count =>
     Array.from({ length: count }, () => Math.floor(Math.random() * 101) / 100);
 
   const [probabilities, setProbabilities] = useState(generateProbabilities(armsCount));
@@ -28,36 +28,62 @@ export default function BernoulliBanditUI() {
   const epsilon = 0.1;
 
   const [histories, setHistories] = useState(
-    Object.fromEntries(algorithmsList.map((algo) => [algo, []]))
+    Object.fromEntries(algorithmsList.map(algo => [algo, []]))
   );
 
   function generateArmNames(count) {
     const names = [
-      '🎶 Pop','🎸 Rock','🎤 Hip-Hop','🎧 EDM','💿 House',
-      '🎹 Jazz','🎻 Klassik','🔥 Trap','🎚️ Techno','🎺 Funk',
-      '🎼 Blues','🎸 Indie','🌾 Country','🎧 LoFi','🏝️ Reggae',
+      '🎶 Pop',
+      '🎸 Rock',
+      '🎤 Hip-Hop',
+      '🎧 EDM',
+      '💿 House',
+      '🎹 Jazz',
+      '🎻 Klassik',
+      '🔥 Trap',
+      '🎚️ Techno',
+      '🎺 Funk',
+      '🎼 Blues',
+      '🎸 Indie',
+      '🌾 Country',
+      '🎧 LoFi',
+      '🏝️ Reggae',
     ];
     if (count <= 15) return names.slice(0, count);
-    const extra = Array.from({ length: count - 15 }, (_, i) => `Genre ${String.fromCharCode(65 + i)}`);
+    const extra = Array.from(
+      { length: count - 15 },
+      (_, i) => `Genre ${String.fromCharCode(65 + i)}`
+    );
     return [...names, ...extra];
   }
 
-  const getStats = (algorithm) => {
+  const getStats = algorithm => {
     const data = histories[algorithm];
     const n_i = Array(armsCount).fill(0);
     const successes = Array(armsCount).fill(0);
-    data.forEach(h => { n_i[h.arm]++; if (h.reward === 1) successes[h.arm]++; });
+    data.forEach(h => {
+      n_i[h.arm]++;
+      if (h.reward === 1) successes[h.arm]++;
+    });
     return { n_i, successes, total: data.length };
   };
 
   const chooseArm = (algorithm, n_i, successes, total, armsCount) => {
     switch (algorithm) {
-      case 'Random':   return randomChoice(armsCount);
-      case 'Greedy': { const values = successes.map((s,i)=> n_i[i]>0 ? s/n_i[i] : 0); return greedy(values); }
-      case 'Epsilon':  return epsilonGreedy(successes, armsCount, epsilon, n_i);
-      case 'UCB':      return ucb(successes, n_i, total);
-      case 'Posterior':return posterior(successes, n_i);
-      default:         return 0;
+      case 'Random':
+        return randomChoice(armsCount);
+      case 'Greedy': {
+        const values = successes.map((s, i) => (n_i[i] > 0 ? s / n_i[i] : 0));
+        return greedy(values);
+      }
+      case 'Epsilon':
+        return epsilonGreedy(successes, armsCount, epsilon, n_i);
+      case 'UCB':
+        return ucb(successes, n_i, total);
+      case 'Posterior':
+        return posterior(successes, n_i);
+      default:
+        return 0;
     }
   };
 
@@ -79,7 +105,7 @@ export default function BernoulliBanditUI() {
     });
   };
 
-  const userStep = (arm) => {
+  const userStep = arm => {
     if (locked) return;
     const newHistories = { ...histories };
     const rewardUser = Math.random() < probabilities[arm] ? 1 : 0;
@@ -112,7 +138,7 @@ export default function BernoulliBanditUI() {
     setUserLog([]);
   };
 
-  const hardResetArms = (count) => {
+  const hardResetArms = count => {
     const safe = Math.min(26, Math.max(2, count));
     setArmsCount(safe);
     setArmNames(generateArmNames(safe));
@@ -125,11 +151,13 @@ export default function BernoulliBanditUI() {
   };
 
   const algoSummary = useMemo(() => {
-    return algorithmsList.filter(a => a !== 'User').map(algo => {
-      const { successes, total } = getStats(algo);
-      const mean = total > 0 ? successes.reduce((s,v)=>s+v,0) / total : 0;
-      return { algo, pulls: total, hitRate: mean };
-    });
+    return algorithmsList
+      .filter(a => a !== 'User')
+      .map(algo => {
+        const { successes, total } = getStats(algo);
+        const mean = total > 0 ? successes.reduce((s, v) => s + v, 0) / total : 0;
+        return { algo, pulls: total, hitRate: mean };
+      });
   }, [histories, armsCount]);
 
   return (
@@ -148,7 +176,10 @@ export default function BernoulliBanditUI() {
                 <label>
                   Anzahl Genres
                   <input
-                    type="number" min="2" max="26" value={armsCount}
+                    type="number"
+                    min="2"
+                    max="26"
+                    value={armsCount}
                     onChange={e => {
                       const c = Math.min(26, Math.max(2, parseInt(e.target.value || '4', 10)));
                       hardResetArms(c);
@@ -158,14 +189,20 @@ export default function BernoulliBanditUI() {
                 <label>
                   Max. Runden
                   <input
-                    type="number" min="1" value={maxTurns}
+                    type="number"
+                    min="1"
+                    value={maxTurns}
                     onChange={e => setMaxTurns(Math.max(1, parseInt(e.target.value || '1', 10)))}
                   />
                 </label>
               </div>
               <div className="row">
-                <button onClick={step} disabled={locked}>Nächste Runde</button>
-                <button className="reset-btn" onClick={reset}>Reset</button>
+                <button onClick={step} disabled={locked}>
+                  Nächste Runde
+                </button>
+                <button className="reset-btn" onClick={reset}>
+                  Reset
+                </button>
               </div>
             </div>
 
@@ -206,12 +243,12 @@ export default function BernoulliBanditUI() {
           <div className="right-col">
             <div className="charts-card">
               <div className="charts-grid">
-                <div style={{position: 'relative'}}>
+                <div style={{ position: 'relative' }}>
                   <AlgorithmHitsChart histories={histories} />
                 </div>
 
                 {locked && (
-                  <div style={{position: 'relative'}}>
+                  <div style={{ position: 'relative' }}>
                     <ProbabilityChart probabilities={probabilities} armNames={armNames} />
                   </div>
                 )}
