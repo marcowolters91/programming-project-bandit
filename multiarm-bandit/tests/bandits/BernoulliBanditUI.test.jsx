@@ -4,9 +4,9 @@ import React from 'react';
 import BernoulliBanditUI from '../../src/bandits/BernoulliBandit.jsx';
 
 describe('BernoulliBanditUI', () => {
-  it('zeigt Eingabefelder für Arme und Runden an', () => {
+  it('zeigt Eingabefelder für Genres und Runden an', () => {
     render(<BernoulliBanditUI />);
-    expect(screen.getByLabelText(/Anzahl Arme/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Anzahl Genres/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Max\. Runden/i)).toBeInTheDocument();
   });
 
@@ -28,23 +28,20 @@ describe('BernoulliBanditUI', () => {
     });
   });
 
-  it('zeigt Strategie-Buttons an und reagiert auf Klicks', () => {
+  it('zeigt Genre-Buttons an und reagiert auf Klicks', () => {
     render(<BernoulliBanditUI />);
-    const strategyButtons = screen.getAllByRole('button');
+    const genreButtons = screen.getAllByRole('button');
 
-    const strategyLabels = [
-      'Konstante Temperatur halten',
-      'Stoßweise aufheizen',
-      'Bedarfsgesteuert',
-      'Nachtabsenkung',
-    ];
+    const genres = ['Pop', 'Rock', 'Hip-Hop', 'EDM'];
 
-    const strategyFound = strategyButtons.some(btn =>
-      strategyLabels.some(label => btn.textContent.includes(label))
+    const genreFound = genreButtons.some(btn =>
+      genres.some(label => btn.textContent.includes(label))
     );
 
-    expect(strategyFound).toBe(true);
-    fireEvent.click(strategyButtons.find(btn => btn.textContent.includes('Konstante')));
+    expect(genreFound).toBe(true);
+    // Klick auf einen Genre-Button simulieren
+    const popBtn = genreButtons.find(btn => btn.textContent.includes('Pop'));
+    fireEvent.click(popBtn);
   });
 
   it('zeigt nach mehreren Zügen das Effizienz-Diagramm an', async () => {
@@ -57,7 +54,7 @@ describe('BernoulliBanditUI', () => {
 
     await waitFor(() => {
       const efficiencyTexts = screen.queryAllByText(content =>
-        /Ergebnisse|Effizienz|Treffer pro Algorithmus/i.test(content)
+        /Ergebnisse|Treffer pro Algorithmus/i.test(content)
       );
       expect(efficiencyTexts.length).toBeGreaterThan(0);
     });
