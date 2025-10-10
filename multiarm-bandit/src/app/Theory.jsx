@@ -1,7 +1,7 @@
 import '../styles/bernoulli.css';
 import readme from '../../README.md?raw';
 
-export default function ReadmeView({ title='README', intro='Projektübersicht' }) {
+export default function ReadmeView({ title = 'README', intro = 'Projektübersicht' }) {
   return (
     <section className="bandit-dashboard">
       <div className="bandit-shell">
