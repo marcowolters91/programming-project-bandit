@@ -83,7 +83,6 @@ export default function GaussBandit() {
   };
 
   const hasAnyHistory = userHistory.length + greedyHistory.length + epsilonHistory.length > 0;
-  const showNormalChart = reachedMax;
 
   return (
     <section className="bandit-dashboard">
