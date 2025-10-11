@@ -1,13 +1,12 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
 import BernoulliBanditUI from '../../src/bandits/BernoulliBandit.jsx';
 
 describe('BernoulliBanditUI', () => {
-  it('zeigt Eingabefelder für Genres und Runden an', () => {
+  it('zeigt Eingabefelder für Genres und max. Runden an', () => {
     render(<BernoulliBanditUI />);
-    expect(screen.getByLabelText(/Anzahl Genres/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Max\. Runden/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Anzahl der Genres/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Anzahl der max\. Runden/i)).toBeInTheDocument();
   });
 
   it('führt Reset korrekt aus', () => {
@@ -32,19 +31,19 @@ describe('BernoulliBanditUI', () => {
     render(<BernoulliBanditUI />);
     const genreButtons = screen.getAllByRole('button');
 
-    const genres = ['Pop', 'Rock', 'Hip-Hop', 'EDM'];
-
     const genreFound = genreButtons.some(btn =>
-      genres.some(label => btn.textContent.includes(label))
+      /Rock|Pop|Jazz|Hip-Hop|Metal|Classical|EDM|Country/i.test(btn.textContent)
     );
 
     expect(genreFound).toBe(true);
-    // Klick auf einen Genre-Button simulieren
-    const popBtn = genreButtons.find(btn => btn.textContent.includes('Pop'));
-    fireEvent.click(popBtn);
+
+    const firstGenreBtn = genreButtons.find(btn =>
+      /Rock|Pop|Jazz|Hip-Hop|Metal|Classical|EDM|Country/i.test(btn.textContent)
+    );
+    fireEvent.click(firstGenreBtn);
   });
 
-  it('zeigt nach mehreren Zügen das Effizienz-Diagramm an', async () => {
+  it('zeigt nach mehreren Zügen Ergebnisse und Algorithmus-Tabelle an', async () => {
     render(<BernoulliBanditUI />);
     const nextBtn = screen.getByRole('button', { name: /Nächste Runde/i });
 
@@ -53,16 +52,14 @@ describe('BernoulliBanditUI', () => {
     }
 
     await waitFor(() => {
-      const efficiencyTexts = screen.queryAllByText(content =>
-        /Ergebnisse|Treffer pro Algorithmus/i.test(content)
-      );
-      expect(efficiencyTexts.length).toBeGreaterThan(0);
+      expect(screen.getByText(/Ergebnisse/i)).toBeInTheDocument();
+      expect(screen.getByText(/Algorithmus/i)).toBeInTheDocument();
     });
   });
 
   it('beendet Simulation korrekt, wenn maximale Runden erreicht sind', async () => {
     render(<BernoulliBanditUI />);
-    const roundsInput = screen.getByLabelText(/Max\. Runden/i);
+    const roundsInput = screen.getByLabelText(/Anzahl der max\. Runden/i);
     fireEvent.change(roundsInput, { target: { value: 3 } });
 
     const nextBtn = screen.getByRole('button', { name: /Nächste Runde/i });
@@ -74,6 +71,20 @@ describe('BernoulliBanditUI', () => {
     await waitFor(() => {
       const roundInfo = screen.getByText(/Gespielte Runden/i);
       expect(roundInfo.textContent).toMatch(/3/);
+    });
+  });
+
+  it('zeigt Feedback nach User-Klick', async () => {
+    render(<BernoulliBanditUI />);
+    const genreButtons = screen.getAllByRole('button');
+    const genreBtn = genreButtons.find(btn =>
+      /Rock|Pop|Jazz|Hip-Hop|Metal|Classical|EDM|Country/i.test(btn.textContent)
+    );
+    fireEvent.click(genreBtn);
+
+    await waitFor(() => {
+      const feedbacks = screen.queryAllByText(/Zug/i);
+      expect(feedbacks.length).toBeGreaterThan(0);
     });
   });
 });

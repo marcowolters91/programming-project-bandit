@@ -4,24 +4,35 @@ import '../styles/gauss.css';
 
 import NormalDistributionChart from '../diagrams/normalDistributionChart';
 import UserGreedyTrend from '../diagrams/algorithmTrendChart';
+
 import { greedy } from '../functions/greedy.js';
 import { epsilonGreedy } from '../functions/epsilonGreedy.js';
+import { musicGenres } from '../bandits/MusicGenres.js';
+
+function pickRandomGenres(n) {
+  const shuffled = [...musicGenres].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, n);
+}
 
 export default function GaussBandit() {
-  const [strategyNames] = useState(['🎶 Pop', '🎸 Rock', '🎤 Hip-Hop', '🎧 EDM']);
+  const [numGenres, setNumGenres] = useState(4);
+  const [maxTurns, setMaxTurns] = useState(10);
+
+  const strategyNames = useMemo(() => {
+    const safe = Math.min(musicGenres.length, Math.max(1, numGenres));
+    return safe === musicGenres.length ? [...musicGenres] : pickRandomGenres(safe);
+  }, [numGenres]);
 
   const banditUser = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
   const banditGreedy = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
   const banditEpsilon = useMemo(() => new GaussianBandit(strategyNames), [strategyNames]);
 
   const [turns, setTurns] = useState(0);
-  const [maxTurns, setMaxTurns] = useState('');
   const [userHistory, setUserHistory] = useState([]);
   const [greedyHistory, setGreedyHistory] = useState([]);
   const [epsilonHistory, setEpsilonHistory] = useState([]);
 
-  const maxTurnsN = maxTurns === '' ? null : Number(maxTurns);
-  const reachedMax = maxTurnsN != null && turns >= maxTurnsN;
+  const reachedMax = turns >= maxTurns;
 
   const pullGreedyOnce = () => {
     const valuesGreedy = banditGreedy.strategies.map((_, i) =>
@@ -31,7 +42,7 @@ export default function GaussBandit() {
     const rewardGreedy = banditGreedy.pull(greedyIndex);
     setGreedyHistory(prev => [
       ...prev,
-      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
+      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy }
     ]);
   };
 
@@ -39,16 +50,11 @@ export default function GaussBandit() {
     const valuesEps = banditEpsilon.strategies.map((_, i) =>
       banditEpsilon.counts[i] > 0 ? banditEpsilon.sumRewards[i] / banditEpsilon.counts[i] : 0
     );
-    const epsIndex = epsilonGreedy(
-      valuesEps,
-      banditEpsilon.strategies.length,
-      0.1,
-      banditEpsilon.counts
-    );
+    const epsIndex = epsilonGreedy(valuesEps, banditEpsilon.strategies.length, 0.1, banditEpsilon.counts);
     const rewardEps = banditEpsilon.pull(epsIndex);
     setEpsilonHistory(prev => [
       ...prev,
-      { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps },
+      { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps }
     ]);
   };
 
@@ -59,15 +65,15 @@ export default function GaussBandit() {
     setTurns(t => t + 1);
   };
 
-  const handlePull = strategyIndex => {
+  const handlePull = (strategyIndex) => {
     if (reachedMax) return;
-
     const rewardUser = banditUser.pull(strategyIndex);
-    setUserHistory(prev => [...prev, { turn: turns + 1, strategyIndex, reward: rewardUser }]);
-
+    setUserHistory(prev => [
+      ...prev,
+      { turn: turns + 1, strategyIndex, reward: rewardUser }
+    ]);
     pullGreedyOnce();
     pullEpsilonOnce();
-
     setTurns(t => t + 1);
   };
 
@@ -79,7 +85,6 @@ export default function GaussBandit() {
     setUserHistory([]);
     setGreedyHistory([]);
     setEpsilonHistory([]);
-    setMaxTurns('');
   };
 
   const hasAnyHistory = userHistory.length + greedyHistory.length + epsilonHistory.length > 0;
@@ -89,21 +94,27 @@ export default function GaussBandit() {
       <div className="bandit-shell">
         <header className="dashboard-header">
           <h2>Gauss-Bandit</h2>
-          <p className="intro">
-            Analysiere verschiedene Musikgenre-Strategien auf Basis einer normalverteilten
-            Reward-Struktur.
-          </p>
+          <p className="intro">Analysiere verschiedene Musikgenre-Strategien auf Basis einer normalverteilten Reward-Struktur.</p>
         </header>
 
         <main className="main">
-          {/* LINKS – 1:1 wie Bernoulli */}
           <div className="left-col">
             <div className="control-panel block">
               <h3>Simulation</h3>
               <div className="row">
                 <label>
                   Anzahl Genres
-                  <input className="bb-input" type="number" value={strategyNames.length} disabled />
+                  <input
+                    className="bb-input"
+                    type="number"
+                    min="1"
+                    max={musicGenres.length}
+                    value={numGenres}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value, 10);
+                      setNumGenres(isNaN(v) ? 1 : Math.min(Math.max(1, v), musicGenres.length));
+                    }}
+                  />
                 </label>
                 <label>
                   Max. Runden
@@ -112,20 +123,16 @@ export default function GaussBandit() {
                     type="number"
                     min="1"
                     value={maxTurns}
-                    onChange={e => {
-                      const v = e.target.value;
-                      setMaxTurns(v === '' ? '' : Math.max(1, parseInt(v, 10)));
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value, 10);
+                      setMaxTurns(isNaN(v) ? 1 : Math.max(1, v));
                     }}
                   />
                 </label>
               </div>
               <div className="row">
-                <button className="bb-btn primary" onClick={handleNextRound} disabled={reachedMax}>
-                  Nächste Runde
-                </button>
-                <button className="bb-btn reset-btn" onClick={handleReset}>
-                  Reset
-                </button>
+                <button className="bb-btn primary" onClick={handleNextRound} disabled={reachedMax}>Nächste Runde</button>
+                <button className="bb-btn reset-btn" onClick={handleReset}>Reset</button>
               </div>
             </div>
 
@@ -141,7 +148,6 @@ export default function GaussBandit() {
             </div>
           </div>
 
-          {/* RECHTS */}
           <div className="right-col">
             <div className="charts-card">
               <div className="charts-grid">
@@ -160,7 +166,7 @@ export default function GaussBandit() {
                 <div className="chart-box chart--normal">
                   {reachedMax ? (
                     <NormalDistributionChart
-                      strategies={strategyNames.map(name => ({ name }))}
+                      strategies={strategyNames.map((name) => ({ name }))}
                       counts={banditUser.counts}
                       bandit={banditUser}
                     />
@@ -171,11 +177,11 @@ export default function GaussBandit() {
               </div>
             </div>
 
+            {/* Ergebnistabelle für Genres */}
             <div className="charts-section">
               <h3>Ergebnisse</h3>
               <p>
-                Gespielte Runden: {turns}
-                {maxTurns !== '' && ` / ${maxTurns}`}
+                Gespielte Runden: {turns} / {maxTurns}
               </p>
 
               <table>
@@ -194,8 +200,7 @@ export default function GaussBandit() {
                       <td>
                         {banditUser.counts[i]
                           ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
-                          : '0.00'}{' '}
-                        kW
+                          : '0.00'} kW
                       </td>
                     </tr>
                   ))}
