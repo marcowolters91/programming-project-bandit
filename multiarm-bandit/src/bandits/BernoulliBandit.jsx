@@ -138,6 +138,7 @@ export default function BernoulliBanditUI() {
         const mean = total > 0 ? successes.reduce((s, v) => s + v, 0) / total : 0;
         return { algo, pulls: total, hitRate: mean };
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [histories, armsCount]);
 
   return (
