@@ -1,0 +1,17 @@
+export const musicGenres = [
+  '🎶 Pop',
+  '🎸 Rock',
+  '🎤 Hip-Hop',
+  '🎧 EDM',
+  '💿 House',
+  '🎹 Jazz',
+  '🎻 Klassik',
+  '🔥 Trap',
+  '🎚️ Techno',
+  '🎺 Funk',
+  '🎼 Blues',
+  '🎸 Indie',
+  '🌾 Country',
+  '🎧 LoFi',
+  '🏝️ Reggae'
+];
