@@ -26,7 +26,7 @@ export default function BernoulliBanditUI() {
   const [feedback, setFeedback] = useState(null);
   const [userLog, setUserLog] = useState([]);
 
-  const generateProbabilities = (count) =>
+  const generateProbabilities = count =>
     Array.from({ length: count }, () => Math.floor(Math.random() * 101) / 100);
 
   const [probabilities, setProbabilities] = useState(generateProbabilities(armsCount));
@@ -34,22 +34,33 @@ export default function BernoulliBanditUI() {
   const epsilon = 0.1;
   const [histories, setHistories] = useState(Object.fromEntries(algorithmsList.map(a => [a, []])));
 
-  const getStats = (algorithm) => {
+  const getStats = algorithm => {
     const data = histories[algorithm];
     const n_i = Array(armsCount).fill(0);
     const successes = Array(armsCount).fill(0);
-    data.forEach(h => { n_i[h.arm]++; if (h.reward === 1) successes[h.arm]++; });
+    data.forEach(h => {
+      n_i[h.arm]++;
+      if (h.reward === 1) successes[h.arm]++;
+    });
     return { n_i, successes, total: data.length };
   };
 
   const chooseArm = (algorithm, n_i, successes, total, armsCount) => {
     switch (algorithm) {
-      case 'Random':   return randomChoice(armsCount);
-      case 'Greedy': { const values = successes.map((s,i)=> n_i[i]>0 ? s/n_i[i] : 0); return greedy(values); }
-      case 'Epsilon':  return epsilonGreedy(successes, armsCount, epsilon, n_i);
-      case 'UCB':      return ucb(successes, n_i, total);
-      case 'Posterior':return posterior(successes, n_i);
-      default:         return 0;
+      case 'Random':
+        return randomChoice(armsCount);
+      case 'Greedy': {
+        const values = successes.map((s, i) => (n_i[i] > 0 ? s / n_i[i] : 0));
+        return greedy(values);
+      }
+      case 'Epsilon':
+        return epsilonGreedy(successes, armsCount, epsilon, n_i);
+      case 'UCB':
+        return ucb(successes, n_i, total);
+      case 'Posterior':
+        return posterior(successes, n_i);
+      default:
+        return 0;
     }
   };
 
@@ -71,7 +82,7 @@ export default function BernoulliBanditUI() {
     });
   };
 
-  const userStep = (arm) => {
+  const userStep = arm => {
     if (locked) return;
     const newHistories = { ...histories };
     const rewardUser = Math.random() < probabilities[arm] ? 1 : 0;
@@ -98,14 +109,15 @@ export default function BernoulliBanditUI() {
     setHistories(Object.fromEntries(algorithmsList.map(a => [a, []])));
     setTurns(0);
     setLocked(false);
-    const newArmNames = armsCount === musicGenres.length ? [...musicGenres] : pickRandomGenres(armsCount);
+    const newArmNames =
+      armsCount === musicGenres.length ? [...musicGenres] : pickRandomGenres(armsCount);
     setArmNames(newArmNames);
     setProbabilities(generateProbabilities(armsCount));
     setFeedback(null);
     setUserLog([]);
   };
 
-  const hardResetArms = (count) => {
+  const hardResetArms = count => {
     const safe = Math.min(musicGenres.length, Math.max(1, count));
     const newArmNames = safe === musicGenres.length ? [...musicGenres] : pickRandomGenres(safe);
     setArmsCount(safe);
@@ -119,11 +131,13 @@ export default function BernoulliBanditUI() {
   };
 
   const algoSummary = useMemo(() => {
-    return algorithmsList.filter(a => a !== 'User').map(algo => {
-      const { successes, total } = getStats(algo);
-      const mean = total > 0 ? successes.reduce((s,v)=>s+v,0) / total : 0;
-      return { algo, pulls: total, hitRate: mean };
-    });
+    return algorithmsList
+      .filter(a => a !== 'User')
+      .map(algo => {
+        const { successes, total } = getStats(algo);
+        const mean = total > 0 ? successes.reduce((s, v) => s + v, 0) / total : 0;
+        return { algo, pulls: total, hitRate: mean };
+      });
   }, [histories, armsCount]);
 
   return (
@@ -131,12 +145,21 @@ export default function BernoulliBanditUI() {
       <div className="bandit-shell">
         <header className="dashboard-header">
           <h2>Bernoulli-Bandit</h2>
-          <p>Du willst wissen ob dein Musikgeschmack derzeit der absolute Trend ist? Dann bist du hier richtig!</p>
+          <p>
+            Du willst wissen ob dein Musikgeschmack derzeit der absolute Trend ist? Dann bist du
+            hier richtig!
+          </p>
           <p className="intro">Die Genres als Arme des Banditen - Eintretende Rewards:</p>
           <p>1: Treffer - Das Genre gefällt dem User!</p>
           <p>2: Kein Treffer - Das Genre wird geskippt!</p>
-          <p>Die Regeln sind erklärt, worauf wartest du also noch? Es liegt nun einzig und alleine an dir, das derzeit beliebteste Genre zu finden! Und das geht auf Zeit!</p>
-          <p>Aber Achtung: Du bist nicht der einzige Spieler, denn deine Gegener sind nicht direkt sichtbar!</p>
+          <p>
+            Die Regeln sind erklärt, worauf wartest du also noch? Es liegt nun einzig und alleine an
+            dir, das derzeit beliebteste Genre zu finden! Und das geht auf Zeit!
+          </p>
+          <p>
+            Aber Achtung: Du bist nicht der einzige Spieler, denn deine Gegener sind nicht direkt
+            sichtbar!
+          </p>
         </header>
         <main className="main">
           <div className="left-col">
@@ -151,7 +174,10 @@ export default function BernoulliBanditUI() {
                     max={musicGenres.length}
                     value={armsCount}
                     onChange={e => {
-                      const c = Math.min(musicGenres.length, Math.max(1, parseInt(e.target.value || '1', 10)));
+                      const c = Math.min(
+                        musicGenres.length,
+                        Math.max(1, parseInt(e.target.value || '1', 10))
+                      );
                       hardResetArms(c);
                     }}
                   />
@@ -167,8 +193,12 @@ export default function BernoulliBanditUI() {
                 </label>
               </div>
               <div className="row">
-                <button onClick={step} disabled={locked}>Nächste Runde</button>
-                <button className="reset-btn" onClick={reset}>Reset</button>
+                <button onClick={step} disabled={locked}>
+                  Nächste Runde
+                </button>
+                <button className="reset-btn" onClick={reset}>
+                  Reset
+                </button>
               </div>
             </div>
 
@@ -209,12 +239,12 @@ export default function BernoulliBanditUI() {
           <div className="right-col">
             <div className="charts-card">
               <div className="charts-grid">
-                <div style={{position: 'relative'}}>
+                <div style={{ position: 'relative' }}>
                   <AlgorithmHitsChart histories={histories} />
                 </div>
 
                 {locked && (
-                  <div style={{position: 'relative'}}>
+                  <div style={{ position: 'relative' }}>
                     <ProbabilityChart probabilities={probabilities} armNames={armNames} />
                   </div>
                 )}

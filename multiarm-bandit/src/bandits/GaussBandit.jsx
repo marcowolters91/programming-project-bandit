@@ -42,7 +42,7 @@ export default function GaussBandit() {
     const rewardGreedy = banditGreedy.pull(greedyIndex);
     setGreedyHistory(prev => [
       ...prev,
-      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy }
+      { turn: turns + 1, strategyIndex: greedyIndex, reward: rewardGreedy },
     ]);
   };
 
@@ -50,11 +50,16 @@ export default function GaussBandit() {
     const valuesEps = banditEpsilon.strategies.map((_, i) =>
       banditEpsilon.counts[i] > 0 ? banditEpsilon.sumRewards[i] / banditEpsilon.counts[i] : 0
     );
-    const epsIndex = epsilonGreedy(valuesEps, banditEpsilon.strategies.length, 0.1, banditEpsilon.counts);
+    const epsIndex = epsilonGreedy(
+      valuesEps,
+      banditEpsilon.strategies.length,
+      0.1,
+      banditEpsilon.counts
+    );
     const rewardEps = banditEpsilon.pull(epsIndex);
     setEpsilonHistory(prev => [
       ...prev,
-      { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps }
+      { turn: turns + 1, strategyIndex: epsIndex, reward: rewardEps },
     ]);
   };
 
@@ -65,13 +70,10 @@ export default function GaussBandit() {
     setTurns(t => t + 1);
   };
 
-  const handlePull = (strategyIndex) => {
+  const handlePull = strategyIndex => {
     if (reachedMax) return;
     const rewardUser = banditUser.pull(strategyIndex);
-    setUserHistory(prev => [
-      ...prev,
-      { turn: turns + 1, strategyIndex, reward: rewardUser }
-    ]);
+    setUserHistory(prev => [...prev, { turn: turns + 1, strategyIndex, reward: rewardUser }]);
     pullGreedyOnce();
     pullEpsilonOnce();
     setTurns(t => t + 1);
@@ -94,7 +96,10 @@ export default function GaussBandit() {
       <div className="bandit-shell">
         <header className="dashboard-header">
           <h2>Gauss-Bandit</h2>
-          <p className="intro">Analysiere verschiedene Musikgenre-Strategien auf Basis einer normalverteilten Reward-Struktur.</p>
+          <p className="intro">
+            Analysiere verschiedene Musikgenre-Strategien auf Basis einer normalverteilten
+            Reward-Struktur.
+          </p>
         </header>
 
         <main className="main">
@@ -110,7 +115,7 @@ export default function GaussBandit() {
                     min="1"
                     max={musicGenres.length}
                     value={numGenres}
-                    onChange={(e) => {
+                    onChange={e => {
                       const v = parseInt(e.target.value, 10);
                       setNumGenres(isNaN(v) ? 1 : Math.min(Math.max(1, v), musicGenres.length));
                     }}
@@ -123,7 +128,7 @@ export default function GaussBandit() {
                     type="number"
                     min="1"
                     value={maxTurns}
-                    onChange={(e) => {
+                    onChange={e => {
                       const v = parseInt(e.target.value, 10);
                       setMaxTurns(isNaN(v) ? 1 : Math.max(1, v));
                     }}
@@ -131,8 +136,12 @@ export default function GaussBandit() {
                 </label>
               </div>
               <div className="row">
-                <button className="bb-btn primary" onClick={handleNextRound} disabled={reachedMax}>Nächste Runde</button>
-                <button className="bb-btn reset-btn" onClick={handleReset}>Reset</button>
+                <button className="bb-btn primary" onClick={handleNextRound} disabled={reachedMax}>
+                  Nächste Runde
+                </button>
+                <button className="bb-btn reset-btn" onClick={handleReset}>
+                  Reset
+                </button>
               </div>
             </div>
 
@@ -166,7 +175,7 @@ export default function GaussBandit() {
                 <div className="chart-box chart--normal">
                   {reachedMax ? (
                     <NormalDistributionChart
-                      strategies={strategyNames.map((name) => ({ name }))}
+                      strategies={strategyNames.map(name => ({ name }))}
                       counts={banditUser.counts}
                       bandit={banditUser}
                     />
@@ -200,7 +209,8 @@ export default function GaussBandit() {
                       <td>
                         {banditUser.counts[i]
                           ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
-                          : '0.00'} kW
+                          : '0.00'}{' '}
+                        kW
                       </td>
                     </tr>
                   ))}

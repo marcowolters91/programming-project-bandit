@@ -13,5 +13,5 @@ export const musicGenres = [
   '🎸 Indie',
   '🌾 Country',
   '🎧 LoFi',
-  '🏝️ Reggae'
+  '🏝️ Reggae',
 ];

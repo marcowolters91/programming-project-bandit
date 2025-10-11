@@ -52,11 +52,7 @@ export function AlgorithmHitsChart({ histories }) {
         <Tooltip />
 
         {/* Legende mit zusätzlichem Abstand */}
-        <Legend
-          verticalAlign="bottom"
-          align="center"
-          wrapperStyle={{ marginTop: 25 }}
-        />
+        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 25 }} />
 
         {/* Linien pro Algorithmus */}
         {Object.keys(histories).map((algo, idx) => {
