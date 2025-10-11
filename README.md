@@ -3,8 +3,8 @@
 
 # Multi-Armed Bandit – Spotify Genre Optimizer
 
-Ein Open-Source-Projekt zur Demonstration und Simulation von Multi-Armed-Bandit-Algorithmen im Kontext von Musikempfehlungen.  
-Das Ziel ist es, verschiedene **Strategien zur Auswahl von Musikgenres auf Spotify** zu vergleichen, um **Nutzerpräferenzen adaptiv zu optimieren**.
+Ein Open-Source-Projekt zur Demonstration und Simulation von Multi-Armed-Bandit-Algorithmen im Kontext von **Musikempfehlungen auf Spotify**.  
+Das Ziel ist es, verschiedene **Strategien zur Auswahl von Musikgenres** zu vergleichen, um **Nutzerpräferenzen datenbasiert zu optimieren**.
 
 > Dieses Projekt wurde im Rahmen des Moduls *Programmierprojekt* an der Hochschule Osnabrück entwickelt.
 
@@ -12,25 +12,29 @@ Das Ziel ist es, verschiedene **Strategien zur Auswahl von Musikgenres auf Spoti
 
 ## Projektübersicht
 
-Der Multi-Armed Bandit simuliert, wie ein System durch wiederholtes Ausprobieren („Exploration“) und gezieltes Nutzen von Wissen („Exploitation“) lernt, welche Optionen die besten Ergebnisse liefern.  
+Der Multi-Armed Bandit simuliert ein Empfehlungssystem, das mit der Zeit lernt, welche Musikrichtungen ein Nutzer bevorzugt.  
+Dabei wird das bekannte **Exploration-Exploitation-Dilemma** genutzt:  
+Das System testet neue Genres (Exploration), während es gleichzeitig bekannte Favoriten häufiger empfiehlt (Exploitation).
 
-In unserem Fall bezieht sich das auf die Auswahl von **Spotify-Musikgenres**.  
-Ziel: Das System soll lernen, welche Musikrichtung einem Nutzer am besten gefällt.
+Im konkreten Use Case werden **Spotify-Genres** wie beispielsweise *Pop*, *Hip-Hop*, *Jazz*, *Techno* oder *Indie* verwendet.  
+Der Algorithmus erhält nach jeder „Wiedergabe“ ein Feedback in Form einer Belohnung — z. B. wie gut dem Nutzer das Genre gefallen hat.  
+Auf Basis dieses Feedbacks passt der Bandit seine Entscheidungspolitik an und lernt fortlaufend, welche Genres die höchste Zufriedenheit erzeugen.
 
-> Beispiel (Platzhalter):  
-> Das System wählt zwischen Genres wie *Pop*, *Jazz*, *Techno* und *Indie*.  
-> Nach jeder „Wiedergabe“ bewertet der Nutzer die Empfehlung, und der Bandit-Algorithmus passt sich an.  
+> Beispiel:  
+> - Der Nutzer hört *Jazz* und bewertet es positiv → Wahrscheinlichkeit für Jazz steigt.  
+> - *Techno* erhält negatives Feedback → wird seltener empfohlen.  
+> Mit der Zeit optimiert sich das System automatisch.
 
 ---
 
-
 ## Technologien
 
-- **React (Vite)** – Frontend-Framework
-- **Node.js** – Lokaler Server und Paketverwaltung
-- **Vitest** – Testing Framework
-- **ESLint + Prettier** – Codequalität & Formatierung
-- **GitHub Actions** – Continuous Integration (Tests bei jedem Push)
+- **React (Vite)** – Frontend-Framework zur Darstellung und Interaktion  
+- **Node.js** – Lokaler Entwicklungsserver & Paketverwaltung  
+- **Vitest** – Testing Framework für Unit- und Integrationstests  
+- **ESLint + Prettier** – Codequalität & Formatierung  
+- **GitHub Actions** – Continuous Integration (CI) mit automatisierten Tests  
+- **Codecov** – Testabdeckung und Qualitätsanalyse  
 
 ---
 
@@ -65,9 +69,23 @@ Ziel: Das System soll lernen, welche Musikrichtung einem Nutzer am besten gefäl
 
 ---
 
+## Funktionsweise
+
+Das System implementiert verschiedene **Bandit-Strategien** zur Auswahl von Musikgenres, darunter:
+
+- **Greedy-Algorithmus** – Wählt immer das aktuell beste Genre  
+- **Epsilon-Greedy** – Erkundet gelegentlich neue Genres  
+- **Upper Confidence Bound (UCB)** – Balanciert Risiko und Belohnung  
+- **Thompson Sampling** – Wahrscheinlichkeitsbasiertes Lernen  
+
+Die Performance der Strategien wird durch simulierte Nutzerinteraktionen und statistische Auswertungen verglichen.  
+Das Frontend visualisiert dabei die Ergebnisse (z. B. Auswahlhäufigkeit, erwartete Belohnung, Lernkurve).
+
+---
+
 ## Tests ausführen
 
-Das Projekt nutzt **Vitest** für automatisierte Tests / Coverage.
+Das Projekt nutzt **Vitest** für automatisierte Tests und Coverage-Berichte.
 
 ```bash
 npm run coverage
@@ -83,29 +101,28 @@ Das Repository enthält eine **GitHub Actions Workflow-Datei** (`.github/workflo
 die bei jedem Push automatisch:
 
 1. Den Code lintet  
-2. Den Code mit einem Prettier Bearbeitet
+2. Den Code mit Prettier formatiert  
 3. Die Tests mit Vitest ausführt  
 4. Einen Build erstellt  
+5. Die Testabdeckung an Codecov übermittelt  
 
 ---
 
 ## Erweiterungsmöglichkeiten (Ausblick)
 
-- Implementierung echter Spotify-Daten via API (z. B. genre-basiertes Feedback)  
-- Vergleich verschiedener Strategien wie:
-  - Epsilon-Greedy
-  - Upper Confidence Bound (UCB)
-  - Thompson Sampling  
-- Visualisierung der Lernkurve und Belohnungsverteilung  
-- Frontend-UI für Nutzerinteraktion und Statistikanzeige  
+- Integration echter **Spotify-APIs** zur Auswertung von Hörgewohnheiten  
+- Verwendung von **realen Feedbackdaten** anstelle von Simulationen  
+- Erweiterung um **künstliche Nutzerprofile** mit individuellen Präferenzen  
+- Aufbau eines Dashboards zur **Visualisierung von Lernprozessen**  
+- Vergleich der Strategien in Echtzeit über eine interaktive Oberfläche  
 
 ---
 
 ## Team & Projektmanagement
 
-- Hochschule Osnabrück – Modul *Programmierprojekt (5. Semester)*
-- Projektorganisation über GitHub (Issues, Pull Requests, CI)
-- Kommunikation über MS Teams & Jira
+- Hochschule Osnabrück – Modul *Programmierprojekt (5. Semester)*  
+- Projektorganisation über GitHub (Issues, Pull Requests, CI)  
+- Kommunikation über MS Teams & Jira  
 
 ---
 
