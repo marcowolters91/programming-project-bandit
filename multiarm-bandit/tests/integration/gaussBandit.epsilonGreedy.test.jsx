@@ -29,7 +29,7 @@ describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
     }
 
     await waitFor(() => {
-    // Das Diagramm wird durch UserGreedyTrend gerendert
+      // Das Diagramm wird durch UserGreedyTrend gerendert
       expect(screen.getByText(/Gespielte Runden/i)).toHaveTextContent(/5/);
     });
   });
@@ -57,8 +57,7 @@ describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
 
       // Akzeptiere entweder Chart-Komponente oder Fallbacktext als Erfolg
       const hasChart =
-        screen.queryByText(/Keine Verlaufsdaten vorhanden/i) === null ||
-        chartBoxes.length >= 2;
+        screen.queryByText(/Keine Verlaufsdaten vorhanden/i) === null || chartBoxes.length >= 2;
 
       expect(hasChart).toBe(true);
     });
@@ -72,13 +71,9 @@ describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
     fireEvent.click(nextBtn);
     fireEvent.click(nextBtn);
 
-    await waitFor(() =>
-      expect(screen.getByText(/Gespielte Runden/i)).toHaveTextContent(/2/)
-    );
+    await waitFor(() => expect(screen.getByText(/Gespielte Runden/i)).toHaveTextContent(/2/));
 
     fireEvent.click(resetBtn);
-    await waitFor(() =>
-      expect(screen.getByText(/Gespielte Runden/i)).toHaveTextContent(/0/)
-    );
+    await waitFor(() => expect(screen.getByText(/Gespielte Runden/i)).toHaveTextContent(/0/));
   });
 });
