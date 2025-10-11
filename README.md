@@ -22,9 +22,9 @@ So entsteht ein System, das Schritt für Schritt **lernt, welche Musik am besten
 
 ---
 
-## 🎵 Bandit-Varianten im Detail
+## Bandit-Varianten im Detail
 
-### 🎯 Bernoulli-Bandit
+### Bernoulli-Bandit
 
 Du willst wissen, ob dein Musikgeschmack gerade der absolute Trend ist?  
 Dann bist du hier genau richtig!
@@ -45,7 +45,7 @@ Ihr alle wetteifert darum, den optimalen Musiktrend zuerst zu entdecken!
 
 ---
 
-### 📈 Gaussian-Bandit
+### Gaussian-Bandit
 
 Analysiere verschiedene Musikgenre-Strategien auf Basis einer **normalverteilten Reward-Struktur**.  
 Hier geht es nicht nur um Treffer oder Nieten, sondern um **graduelle Bewertungen** – wie sehr ein Genre gefallen hat.  
@@ -58,9 +58,8 @@ So wird erkennbar, **welche Strategie langfristig die beste Balance zwischen Ris
 ## Technologien
 
 - **React (Vite)** – Frontend-Framework zur Darstellung und Interaktion  
-- **Node.js** – Lokaler Entwicklungsserver & Paketverwaltung  
 - **Vitest** – Testing Framework für Unit- und Integrationstests  
-- **ESLint + Prettier** – Codequalität & Formatierung  
+- **Linter + Prettier** – Codequalität & Formatierung  
 - **GitHub Actions** – Continuous Integration (CI) mit automatisierten Tests  
 - **Codecov** – Testabdeckung und Qualitätsanalyse  
 
@@ -147,7 +146,6 @@ die bei jedem Push automatisch:
 - Verwendung von **realen Feedbackdaten** statt Simulation  
 - Erweiterung um **personalisierte Nutzerprofile**  
 - Interaktive **Lernvisualisierung** mit Zeitlimit oder Scoreboard  
-- Vergleich mehrerer Spielerstrategien in Echtzeit  
 
 ---
 
