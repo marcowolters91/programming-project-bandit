@@ -16,14 +16,42 @@ Der Multi-Armed Bandit simuliert ein Empfehlungssystem, das mit der Zeit lernt, 
 Dabei wird das bekannte **Exploration-Exploitation-Dilemma** genutzt:  
 Das System testet neue Genres (Exploration), während es gleichzeitig bekannte Favoriten häufiger empfiehlt (Exploitation).
 
-Im konkreten Use Case werden **Spotify-Genres** wie beispielsweise *Pop*, *Hip-Hop*, *Jazz*, *Techno* oder *Indie* verwendet.  
-Der Algorithmus erhält nach jeder „Wiedergabe“ ein Feedback in Form einer Belohnung — z. B. wie gut dem Nutzer das Genre gefallen hat.  
-Auf Basis dieses Feedbacks passt der Bandit seine Entscheidungspolitik an und lernt fortlaufend, welche Genres die höchste Zufriedenheit erzeugen.
+Im konkreten Use Case werden **Spotify-Genres** wie *Pop*, *Hip-Hop*, *Jazz*, *Techno* oder *Indie* verwendet.  
+Nach jeder „Wiedergabe“ bewertet der Nutzer die Empfehlung – positiv oder negativ – und der Algorithmus passt sich adaptiv an.  
+So entsteht ein System, das Schritt für Schritt **lernt, welche Musik am besten ankommt**.
 
-> Beispiel:  
-> - Der Nutzer hört *Jazz* und bewertet es positiv → Wahrscheinlichkeit für Jazz steigt.  
-> - *Techno* erhält negatives Feedback → wird seltener empfohlen.  
-> Mit der Zeit optimiert sich das System automatisch.
+---
+
+## 🎵 Bandit-Varianten im Detail
+
+### 🎯 Bernoulli-Bandit
+
+Du willst wissen, ob dein Musikgeschmack gerade der absolute Trend ist?  
+Dann bist du hier genau richtig!
+
+In dieser Variante werden die Genres als **Arme des Banditen** dargestellt – jede Entscheidung ist ein Wurf ins musikalische Glück.
+
+**Eintretende Rewards:**
+- **1:** Treffer – Das Genre gefällt dem Nutzer!  
+- **0:** Kein Treffer – Das Genre wird geskippt.
+
+Die Regeln sind einfach:  
+Wähle, höre und bewerte – aber aufgepasst: **es geht auf Zeit!**  
+Nur wer schnell und klug entscheidet, findet das aktuell **beliebteste Genre**.  
+
+Doch sei gewarnt:  
+Du bist **nicht allein im Spiel** – deine Gegner sind unsichtbar, aber aktiv.  
+Ihr alle wetteifert darum, den optimalen Musiktrend zuerst zu entdecken!
+
+---
+
+### 📈 Gaussian-Bandit
+
+Analysiere verschiedene Musikgenre-Strategien auf Basis einer **normalverteilten Reward-Struktur**.  
+Hier geht es nicht nur um Treffer oder Nieten, sondern um **graduelle Bewertungen** – wie sehr ein Genre gefallen hat.  
+
+Das Modell erlaubt feinere Nuancen und eignet sich ideal, um Unterschiede zwischen ähnlichen Genres zu erfassen.  
+So wird erkennbar, **welche Strategie langfristig die beste Balance zwischen Risiko und Belohnung** liefert.
 
 ---
 
@@ -71,15 +99,20 @@ Auf Basis dieses Feedbacks passt der Bandit seine Entscheidungspolitik an und le
 
 ## Funktionsweise
 
-Das System implementiert verschiedene **Bandit-Strategien** zur Auswahl von Musikgenres, darunter:
+Das System implementiert mehrere **Bandit-Strategien** zur Optimierung der Musikempfehlungen:
 
 - **Greedy-Algorithmus** – Wählt immer das aktuell beste Genre  
 - **Epsilon-Greedy** – Erkundet gelegentlich neue Genres  
 - **Upper Confidence Bound (UCB)** – Balanciert Risiko und Belohnung  
 - **Thompson Sampling** – Wahrscheinlichkeitsbasiertes Lernen  
 
-Die Performance der Strategien wird durch simulierte Nutzerinteraktionen und statistische Auswertungen verglichen.  
-Das Frontend visualisiert dabei die Ergebnisse (z. B. Auswahlhäufigkeit, erwartete Belohnung, Lernkurve).
+Diese Strategien werden in Simulationen verglichen.  
+Das Frontend visualisiert die Lernprozesse – z. B.:
+- Häufigkeit der Genre-Auswahl  
+- Durchschnittliche Belohnung  
+- Lernkurven und Konvergenzverhalten  
+
+So kann beobachtet werden, **wie jede Strategie mit der Zeit „intelligenter“ wird**.
 
 ---
 
@@ -111,10 +144,10 @@ die bei jedem Push automatisch:
 ## Erweiterungsmöglichkeiten (Ausblick)
 
 - Integration echter **Spotify-APIs** zur Auswertung von Hörgewohnheiten  
-- Verwendung von **realen Feedbackdaten** anstelle von Simulationen  
-- Erweiterung um **künstliche Nutzerprofile** mit individuellen Präferenzen  
-- Aufbau eines Dashboards zur **Visualisierung von Lernprozessen**  
-- Vergleich der Strategien in Echtzeit über eine interaktive Oberfläche  
+- Verwendung von **realen Feedbackdaten** statt Simulation  
+- Erweiterung um **personalisierte Nutzerprofile**  
+- Interaktive **Lernvisualisierung** mit Zeitlimit oder Scoreboard  
+- Vergleich mehrerer Spielerstrategien in Echtzeit  
 
 ---
 
