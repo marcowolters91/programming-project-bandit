@@ -19,7 +19,7 @@ export default defineConfig({
         'eslint.config.*',
         '**/vite.config.*',
         '**/vitest.config.*',
-      ]
+      ],
     },
   },
 });
