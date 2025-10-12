@@ -8,20 +8,34 @@ export default function UserGreedyTrend({
   // Prüfen, ob überhaupt Daten vorhanden sind
   const hasData = userHistory.length > 0 || greedyHistory.length > 0 || epsilonHistory.length > 0;
 
-  // Rohdaten für das Diagramm aufbereiten
-  const rawData = userHistory.map((u, i) => ({
-    Runde: u.turn,
-    User: u.reward,
-    Greedy: greedyHistory[i]?.reward ?? null,
-    EpsilonGreedy: epsilonHistory[i]?.reward ?? null,
-  }));
+  // Kumulative Summen und Durchschnittswerte berechnen
+  let userSum = 0;
+  let greedySum = 0;
+  let epsilonSum = 0;
 
-  // Wenn keine Daten vorhanden sind, Dummy-Datum einfügen
+  const rawData = userHistory.map((u, i) => {
+    userSum += u.reward;
+    const gReward = greedyHistory[i]?.reward ?? null;
+    const eReward = epsilonHistory[i]?.reward ?? null;
+
+    if (gReward != null) greedySum += gReward;
+    if (eReward != null) epsilonSum += eReward;
+
+    const round = i + 1;
+    return {
+      Runde: u.turn,
+      User: userSum / round,
+      Greedy: greedyHistory[i] ? greedySum / round : null,
+      EpsilonGreedy: epsilonHistory[i] ? epsilonSum / round : null,
+    };
+  });
+
+  // Falls keine Daten vorhanden sind → Dummy
   const data = hasData ? rawData : [{ Runde: 0, User: null, Greedy: null, EpsilonGreedy: null }];
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h4>Hörverlauf pro Runde</h4>
+      <h3>Durchschnittlicher Reward pro Runde (kumulativ)</h3>
 
       <LineChart
         width={700}
@@ -31,7 +45,6 @@ export default function UserGreedyTrend({
       >
         <CartesianGrid strokeDasharray="3 3" />
 
-        {/* X-Achse: Runde */}
         <XAxis
           dataKey="Runde"
           label={{
@@ -44,10 +57,9 @@ export default function UserGreedyTrend({
           allowDecimals={false}
         />
 
-        {/* Y-Achse: Hörzeit */}
         <YAxis
           label={{
-            value: 'Hörzeit',
+            value: 'Ø Reward',
             angle: -90,
             position: 'insideLeft',
             style: { textAnchor: 'middle' },
@@ -57,7 +69,6 @@ export default function UserGreedyTrend({
         <Tooltip />
         <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 25 }} />
 
-        {/* Linien für User, Greedy und Epsilon-Greedy */}
         <Line
           type="monotone"
           dataKey="User"
@@ -90,8 +101,7 @@ export default function UserGreedyTrend({
         />
       </LineChart>
 
-      {/* Hinweistext bei fehlenden Daten */}
-      {!hasData && <p style={{ marginTop: '1rem', color: '#666' }}></p>}
+      {!hasData && <p style={{ marginTop: '1rem', color: '#666' }}>Keine Daten vorhanden</p>}
     </div>
   );
 }
