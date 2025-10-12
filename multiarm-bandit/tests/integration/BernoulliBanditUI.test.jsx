@@ -1,6 +1,23 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { beforeEach, afterEach, describe, it, vi } from 'vitest';
 import BernoulliBanditUI from '../../src/bandits/BernoulliBandit.jsx';
+
+// Charts mocken
+vi.mock('../../src/diagrams/probabilityChart.jsx', () => ({
+  ProbabilityChart: () => <div>Mocked ProbabilityChart</div>,
+}));
+vi.mock('../../src/diagrams/algorithmHitsChart.jsx', () => ({
+  AlgorithmHitsChart: () => <div>Mocked AlgorithmHitsChart</div>,
+}));
+
+beforeEach(() => {
+  // Math.random deterministisch mocken
+  vi.spyOn(global.Math, 'random').mockReturnValue(0.5);
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('BernoulliBanditUI', () => {
   it('zeigt Eingabefelder für Genres und max. Runden an', () => {
@@ -30,11 +47,9 @@ describe('BernoulliBanditUI', () => {
   it('zeigt Genre-Buttons an und reagiert auf Klicks', () => {
     render(<BernoulliBanditUI />);
     const genreButtons = screen.getAllByRole('button');
-
     const genreFound = genreButtons.some(btn =>
       /Rock|Pop|Jazz|Hip-Hop|Metal|Classical|EDM|Country/i.test(btn.textContent)
     );
-
     expect(genreFound).toBe(true);
 
     const firstGenreBtn = genreButtons.find(btn =>
@@ -43,7 +58,7 @@ describe('BernoulliBanditUI', () => {
     fireEvent.click(firstGenreBtn);
   });
 
-  it('zeigt nach mehreren Zügen Ergebnisse und Algorithmus-Tabelle an', async () => {
+  it('zeigt nach mehreren Zügen Algorithmus-Tabelle an', async () => {
     render(<BernoulliBanditUI />);
     const nextBtn = screen.getByRole('button', { name: /Nächste Runde/i });
 
@@ -52,8 +67,16 @@ describe('BernoulliBanditUI', () => {
     }
 
     await waitFor(() => {
-      expect(screen.getByText(/Ergebnisse/i)).toBeInTheDocument();
-      expect(screen.getByText(/Algorithmus/i)).toBeInTheDocument();
+      // Überschrift prüfen
+      expect(screen.getByText(/Welcher Algorithmus hat am besten abgeschnitten\?/i)).toBeInTheDocument();
+
+      // Tabelle prüfen
+      const table = screen.getByRole('table');
+      const { getByText: getByTextInTable } = within(table);
+
+      expect(getByTextInTable(/Algorithmus/i)).toBeInTheDocument();
+      expect(getByTextInTable(/Züge/i)).toBeInTheDocument();
+      expect(getByTextInTable(/Hit-Rate/i)).toBeInTheDocument();
     });
   });
 
@@ -63,7 +86,6 @@ describe('BernoulliBanditUI', () => {
     fireEvent.change(roundsInput, { target: { value: 3 } });
 
     const nextBtn = screen.getByRole('button', { name: /Nächste Runde/i });
-
     for (let i = 0; i < 5; i++) {
       fireEvent.click(nextBtn);
     }

@@ -89,8 +89,6 @@ export default function GaussBandit() {
     setEpsilonHistory([]);
   };
 
-  const hasAnyHistory = userHistory.length + greedyHistory.length + epsilonHistory.length > 0;
-
   return (
     <section className="bandit-dashboard">
       <div className="bandit-shell">
@@ -105,10 +103,10 @@ export default function GaussBandit() {
         <main className="main">
           <div className="left-col">
             <div className="control-panel block">
-              <h3>Simulation</h3>
+              <h3>Simulationseinstellungen</h3>
               <div className="row">
                 <label>
-                  Anzahl Genres
+                  Anzahl der Genres:
                   <input
                     className="bb-input"
                     type="number"
@@ -122,7 +120,7 @@ export default function GaussBandit() {
                   />
                 </label>
                 <label>
-                  Max. Runden
+                  Anzahl der max. Runden:
                   <input
                     className="bb-input"
                     type="number"
@@ -160,29 +158,25 @@ export default function GaussBandit() {
           <div className="right-col">
             <div className="charts-card">
               <div className="charts-grid">
+                {/* User vs. Greedy vs. EpsilonChart — immer sichtbar */}
                 <div className="chart-box">
-                  {hasAnyHistory ? (
-                    <UserGreedyTrend
-                      userHistory={userHistory}
-                      greedyHistory={greedyHistory}
-                      epsilonHistory={epsilonHistory}
-                    />
-                  ) : (
-                    <div className="chart-empty" />
-                  )}
+                  <UserGreedyTrend
+                    userHistory={userHistory}
+                    greedyHistory={greedyHistory}
+                    epsilonHistory={epsilonHistory}
+                  />
                 </div>
 
-                <div className="chart-box chart--normal">
-                  {reachedMax ? (
+                {/* NormalDistributionChart — Container erscheint erst wenn reachedMax */}
+                {reachedMax && (
+                  <div className="chart-box chart--normal">
                     <NormalDistributionChart
                       strategies={strategyNames.map(name => ({ name }))}
                       counts={banditUser.counts}
                       bandit={banditUser}
                     />
-                  ) : (
-                    <div className="chart-empty" />
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -198,7 +192,7 @@ export default function GaussBandit() {
                   <tr>
                     <th>Strategie</th>
                     <th>Anzahl Züge</th>
-                    <th>Durchschnittsleistung</th>
+                    <th>Durchschnittliche Hörzeit</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -210,7 +204,7 @@ export default function GaussBandit() {
                         {banditUser.counts[i]
                           ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
                           : '0.00'}{' '}
-                        kW
+                        min
                       </td>
                     </tr>
                   ))}

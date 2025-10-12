@@ -8,7 +8,7 @@ export function ProbabilityChart({ probabilities, armNames }) {
 
   return (
     <div style={{ textAlign: 'center' }}>
-      <h3>Wahrscheinlichkeit der Effizienz</h3>
+      <h3>Zu welcher Wahrscheinlichkeit gefällt ein bestimmtes Genre?</h3>
       <BarChart
         width={700}
         height={400}

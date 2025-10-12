@@ -100,7 +100,7 @@ export default function BernoulliBanditUI() {
       if (maxTurns && next >= maxTurns) setLocked(true);
       return next;
     });
-    const msg = `Zug ${turns + 1}: ${armNames[arm]} → ${rewardUser === 1 ? 'Treffer!' : 'Kein Treffer'}`;
+    const msg = `Zug ${turns + 1}: ${armNames[arm]} → ${rewardUser === 1 ? 'gefällt!' : 'geskippt'}`;
     setFeedback({ text: msg, success: rewardUser === 1 });
     setUserLog(prev => [...prev, { text: msg, success: rewardUser === 1 }].slice(-6));
   };
@@ -253,7 +253,7 @@ export default function BernoulliBanditUI() {
             </div>
 
             <div className="charts-section">
-              <h3>Ergebnisse</h3>
+              <h3>Welcher Algorithmus hat am besten abgeschnitten?</h3>
               <p>
                 Gespielte Runden: {turns} / {maxTurns}
               </p>
