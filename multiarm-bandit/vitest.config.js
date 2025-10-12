@@ -7,11 +7,19 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./tests/setup.js'],
-    exclude: ['node_modules', 'tests/e2e/**'],
+    exclude: ['node_modules', 'tests/e2e/**', 'playwright.config.*', 'eslint.config.*'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
       reportsDirectory: './coverage',
+      exclude: [
+        'tests/**',
+        'tests/e2e/**',
+        'playwright.config.*',
+        'eslint.config.*',
+        '**/vite.config.*',
+        '**/vitest.config.*',
+      ]
     },
   },
 });
