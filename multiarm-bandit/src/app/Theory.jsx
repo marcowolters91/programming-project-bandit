@@ -1,5 +1,5 @@
 import '../styles/bernoulli.css';
-import readme from '../../README.md?raw';
+import readme from '../../theory.md?raw';
 
 export default function ReadmeView({ title = 'README', intro = 'Projektübersicht' }) {
   return (
