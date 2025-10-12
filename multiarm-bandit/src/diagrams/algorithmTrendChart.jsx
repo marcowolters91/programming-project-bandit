@@ -1,6 +1,10 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-export default function UserGreedyTrend({ userHistory = [], greedyHistory = [], epsilonHistory = [] }) {
+export default function UserGreedyTrend({
+  userHistory = [],
+  greedyHistory = [],
+  epsilonHistory = [],
+}) {
   // Prüfen, ob überhaupt Daten vorhanden sind
   const hasData = userHistory.length > 0 || greedyHistory.length > 0 || epsilonHistory.length > 0;
 
@@ -87,10 +91,7 @@ export default function UserGreedyTrend({ userHistory = [], greedyHistory = [], 
       </LineChart>
 
       {/* Hinweistext bei fehlenden Daten */}
-      {!hasData && (
-        <p style={{ marginTop: '1rem', color: '#666' }}>
-        </p>
-      )}
+      {!hasData && <p style={{ marginTop: '1rem', color: '#666' }}></p>}
     </div>
   );
 }

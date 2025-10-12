@@ -5,8 +5,8 @@ export default class GaussianBandit {
     // Jede Strategie = Genre mit zufälliger mittlerer Hörzeit
     this.strategies = strategyNames.map(name => ({
       name,
-      mean: 1 + Math.random() * 29,   // Mittelwert zwischen 1 und 30 Minuten
-      sigma: 1 + Math.random() * 4,   // Standardabweichung zwischen 1 und 5 Minuten
+      mean: 1 + Math.random() * 29, // Mittelwert zwischen 1 und 30 Minuten
+      sigma: 1 + Math.random() * 4, // Standardabweichung zwischen 1 und 5 Minuten
     }));
 
     // Statistik-Zähler
@@ -43,7 +43,8 @@ export default class GaussianBandit {
 
   // Standardnormalverteilung (Box-Muller)
   _randn() {
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) u = Math.random();
     while (v === 0) v = Math.random();
     return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
