@@ -146,20 +146,11 @@ export default function BernoulliBanditUI() {
       <div className="bandit-shell">
         <header className="dashboard-header">
           <h2>Bernoulli-Bandit</h2>
-          <p>
-            Du willst wissen ob dein Musikgeschmack derzeit der absolute Trend ist? Dann bist du
-            hier richtig!
-          </p>
-          <p className="intro">Die Genres als Arme des Banditen - Eintretende Rewards:</p>
-          <p>1: Treffer - Das Genre gefällt dem User!</p>
-          <p>2: Kein Treffer - Das Genre wird geskippt!</p>
-          <p>
-            Die Regeln sind erklärt, worauf wartest du also noch? Es liegt nun einzig und alleine an
-            dir, das derzeit beliebteste Genre zu finden! Und das geht auf Zeit!
-          </p>
-          <p>
-            Aber Achtung: Du bist nicht der einzige Spieler, denn deine Gegener sind nicht direkt
-            sichtbar!
+          <p className="intro">
+            Hier entscheidet ein einfaches „Ja“ oder „Nein“. Jedes Genre hat eine feste
+            Wahrscheinlichkeit, dass es dir gefällt (Treffer = 1) oder du es überspringst (Kein
+            Treffer = 0). Diese Variante modelliert binäre Entscheidungen – also Situationen, in
+            denen das Ergebnis nur Erfolg oder Misserfolg kennt.
           </p>
         </header>
         <main className="main">

@@ -13,6 +13,11 @@ export default function BanditApp() {
         <h1>Multiarm Bandit Suite</h1>
       </header>
 
+      <h4>
+        Hier erfährst du, wie Entscheidungsstrategien hinter modernen Empfehlungssystemen
+        funktionieren – vom Zufall bis zur optimalen Auswahl!
+      </h4>
+
       <nav
         className="bandit-tabs"
         data-active={

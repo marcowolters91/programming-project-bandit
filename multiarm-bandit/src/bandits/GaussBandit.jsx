@@ -97,8 +97,10 @@ export default function GaussBandit() {
         <header className="dashboard-header">
           <h2>Gauss-Bandit</h2>
           <p className="intro">
-            Analysiere verschiedene Musikgenre-Strategien auf Basis einer normalverteilten
-            Reward-Struktur.
+            Beim Gauss-Bandit ist der Reward nicht nur 0 oder 1, sondern ein kontinuierlicher Wert –
+            z. B. wie stark dir ein Genre gefällt. Die Ergebnisse folgen einer Gauß’schen
+            Normalverteilung, wodurch auch kleine Unterschiede zwischen Strategien sichtbar werden.
+            Damit lassen sich feinere Abstufungen und realistischere Nutzerreaktionen darstellen.
           </p>
         </header>
 
