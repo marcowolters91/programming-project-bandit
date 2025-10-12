@@ -22,10 +22,10 @@ describe('GaussianBandit', () => {
   it('erzeugt deterministische Mittelwerte und sigma', () => {
     vi.spyOn(global.Math, 'random').mockReturnValue(0.5);
     const bandit = new GaussianBandit(['X']);
-    // mean = 3 + 0.5 * 7 = 6.5
-    expect(bandit.strategies[0].mean).toBeCloseTo(6.5, 5);
-    // sigma = 0.5 + 0.5 * 1.5 = 1.25
-    expect(bandit.strategies[0].sigma).toBeCloseTo(1.25, 5);
+    // mean = 1 + 0.5 * 29 = 15.5
+    expect(bandit.strategies[0].mean).toBeCloseTo(15.5, 5);
+    // sigma = 1 + 0.5 * 4 = 3
+    expect(bandit.strategies[0].sigma).toBeCloseTo(3, 5);
   });
 
   it('liefert Rewards, die sich um den Mittelwert bewegen', () => {
@@ -66,19 +66,19 @@ describe('GaussianBandit', () => {
     expect(bandit.cumulativeReward).toBe(0);
   });
 
-  it('verwendet korrekt die Normalverteilung im _randn()', () => {
+  it('verwendet korrekt die Standardnormalverteilung im _randn()', () => {
     const bandit = new GaussianBandit(['Demo']);
-    // Mock Math.random, sodass u=0.25, v=0.75
     const mockValues = [0.25, 0.75];
     vi.spyOn(global.Math, 'random').mockImplementation(() => mockValues.shift() ?? 0.9);
     const z = bandit._randn();
     expect(Number.isFinite(z)).toBe(true);
   });
 
-  it('berechnet _sampleReward basierend auf mean und sigma', () => {
+  it('berechnet _sampleReward basierend auf mean und sigma und clipt Werte', () => {
     const bandit = new GaussianBandit(['Demo']);
     vi.spyOn(bandit, '_randn').mockReturnValue(1.5);
+    const unclipped = bandit.strategies[0].mean + 1.5 * bandit.strategies[0].sigma;
     const result = bandit._sampleReward(0);
-    expect(result).toBeCloseTo(bandit.strategies[0].mean + 1.5 * bandit.strategies[0].sigma, 5);
+    expect(result).toBe(Math.max(1, Math.min(unclipped, 30))); // Clip auf 1–30
   });
 });

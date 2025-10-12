@@ -42,7 +42,7 @@ export default function NormalDistributionChart({ strategies, counts, bandit }) 
 
   return (
     <div style={{ marginTop: '2rem' }}>
-      <h4>Normalverteilungen der Heizstrategien</h4>
+      <h4>Normalverteilungen der Genres</h4>
       <LineChart width={700} height={350} data={mergedData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="x" />
