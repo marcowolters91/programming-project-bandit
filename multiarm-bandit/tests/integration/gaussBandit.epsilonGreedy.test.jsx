@@ -11,7 +11,7 @@ import GaussBandit from '../../src/bandits/GaussBandit.jsx';
 describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
   it('zeigt Grundelemente (Inputfelder, Buttons, Tabelle) korrekt an', () => {
     render(<GaussBandit />);
-    expect(screen.getByText(/Gauss-Bandit/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Gauss-Bandit/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/Max\. Runden/i)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Nächste Runde/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Reset/i })).toBeInTheDocument();
