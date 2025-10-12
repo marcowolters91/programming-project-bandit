@@ -68,7 +68,9 @@ describe('BernoulliBanditUI', () => {
 
     await waitFor(() => {
       // Überschrift prüfen
-      expect(screen.getByText(/Welcher Algorithmus hat am besten abgeschnitten\?/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Welcher Algorithmus hat am besten abgeschnitten\?/i)
+      ).toBeInTheDocument();
 
       // Tabelle prüfen
       const table = screen.getByRole('table');
