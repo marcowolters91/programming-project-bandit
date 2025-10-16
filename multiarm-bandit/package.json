@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:ui": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "react": "^19.1.1",
