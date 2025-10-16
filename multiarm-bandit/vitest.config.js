@@ -1,7 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 
+const repoName = 'programming-project-bandit';
+
 export default defineConfig({
+  base: `/${repoName}/`,
   plugins: [react()],
   test: {
     environment: 'jsdom',
