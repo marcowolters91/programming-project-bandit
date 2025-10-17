@@ -41,21 +41,28 @@ export default function NormalDistributionChart({ strategies, counts, bandit }) 
   }
 
   return (
-    <div style={{ marginTop: '2rem' }}>
-      <h4>Normalverteilungen der Genres</h4>
-      <LineChart width={700} height={350} data={mergedData}>
+    <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+      <h3>Normalverteilungen der Genres</h3>
+      <LineChart
+        width={700}
+        height={400}
+        data={mergedData}
+        margin={{ top: 20, right: 30, left: 30, bottom: 60 }}
+      >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="x" />
         <YAxis />
         <Tooltip />
-        <Legend />
+        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 25 }} />
         {strategies.map((s, i) =>
           counts[i] > 0 ? (
             <Line
               key={i}
               type="monotone"
               dataKey={s.name}
+              name={s.name.slice(2)}
               stroke={`hsl(${i * 90}, 70%, 50%)`}
+              strokeWidth={2}
               dot={false}
             />
           ) : null
