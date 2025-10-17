@@ -50,8 +50,44 @@ jobs:
           name: vite-build
           path: multiarm-bandit/dist
 
-  CD-deploy:
+  E2E-Test:
     needs: [CI-Build-and-Test]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: multiarm-bandit
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Start Vite dev server and run Playwright tests
+        run: |
+          npm run dev &
+          npx wait-on http://localhost:5173
+          npx playwright test --config=playwright.config.ts
+        env:
+          CI: true
+
+      - name: Upload Playwright artifacts (videos, traces, screenshots)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results
+          path: multiarm-bandit/test-results
+
+  CD-deploy:
+    needs: [CI-Build-and-Test, E2E-Test]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     permissions:
