@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import '../styles/bernoulli.css';
 
+import BernoulliBandit from '../functions/BernoulliBandit.js';
+
 import { randomChoice } from '../functions/randomChoice';
 import { greedy } from '../functions/greedy';
 import { epsilonGreedy } from '../functions/epsilonGreedy';
@@ -25,14 +27,16 @@ export default function BernoulliBanditUI() {
   const [locked, setLocked] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [userLog, setUserLog] = useState([]);
-
-  const generateProbabilities = count =>
-    Array.from({ length: count }, () => Math.floor(Math.random() * 101) / 100);
-
-  const [probabilities, setProbabilities] = useState(generateProbabilities(armsCount));
   const algorithmsList = ['Random', 'Greedy', 'Epsilon', 'UCB', 'Posterior', 'User'];
   const epsilon = 0.1;
-  const [histories, setHistories] = useState(Object.fromEntries(algorithmsList.map(a => [a, []])));
+
+  const [probKey, setProbKey] = useState(0);
+
+  const bandit = useMemo(() => new BernoulliBandit(armNames), [armNames, probKey]);
+
+  const [histories, setHistories] = useState(
+    Object.fromEntries(algorithmsList.map(a => [a, []]))
+  );
 
   const getStats = algorithm => {
     const data = histories[algorithm];
@@ -45,16 +49,16 @@ export default function BernoulliBanditUI() {
     return { n_i, successes, total: data.length };
   };
 
-  const chooseArm = (algorithm, n_i, successes, total, armsCount) => {
+  const chooseArm = (algorithm, n_i, successes, total, K) => {
     switch (algorithm) {
       case 'Random':
-        return randomChoice(armsCount);
+        return randomChoice(K);
       case 'Greedy': {
         const values = successes.map((s, i) => (n_i[i] > 0 ? s / n_i[i] : 0));
         return greedy(values);
       }
       case 'Epsilon':
-        return epsilonGreedy(successes, armsCount, epsilon, n_i);
+        return epsilonGreedy(successes, K, epsilon, n_i);
       case 'UCB':
         return ucb(successes, n_i, total);
       case 'Posterior':
@@ -67,13 +71,16 @@ export default function BernoulliBanditUI() {
   const step = () => {
     if (locked) return;
     const newHistories = { ...histories };
+    const K = bandit.getArms();
+
     algorithmsList.forEach(algo => {
       if (algo === 'User') return;
       const { n_i, successes, total } = getStats(algo);
-      const arm = chooseArm(algo, n_i, successes, total, armsCount);
-      const reward = Math.random() < probabilities[arm] ? 1 : 0;
+      const arm = chooseArm(algo, n_i, successes, total, K);
+      const reward = bandit.pull(arm);
       newHistories[algo] = [...newHistories[algo], { arm, reward }];
     });
+
     setHistories(newHistories);
     setTurns(prev => {
       const next = prev + 1;
@@ -85,21 +92,26 @@ export default function BernoulliBanditUI() {
   const userStep = arm => {
     if (locked) return;
     const newHistories = { ...histories };
-    const rewardUser = Math.random() < probabilities[arm] ? 1 : 0;
+    const K = bandit.getArms();
+
+    const rewardUser = bandit.pull(arm);
     newHistories.User = [...newHistories.User, { arm, reward: rewardUser }];
+
     algorithmsList.forEach(algo => {
       if (algo === 'User') return;
       const { n_i, successes, total } = getStats(algo);
-      const armChoice = chooseArm(algo, n_i, successes, total, armsCount);
-      const reward = Math.random() < probabilities[armChoice] ? 1 : 0;
+      const armChoice = chooseArm(algo, n_i, successes, total, K);
+      const reward = bandit.pull(armChoice);
       newHistories[algo] = [...newHistories[algo], { arm: armChoice, reward }];
     });
+
     setHistories(newHistories);
     setTurns(prev => {
       const next = prev + 1;
       if (maxTurns && next >= maxTurns) setLocked(true);
       return next;
     });
+
     const msg = `Zug ${turns + 1}: ${armNames[arm]} → ${rewardUser === 1 ? 'gefällt!' : 'geskippt'}`;
     setFeedback({ text: msg, success: rewardUser === 1 });
     setUserLog(prev => [...prev, { text: msg, success: rewardUser === 1 }].slice(-6));
@@ -109,12 +121,9 @@ export default function BernoulliBanditUI() {
     setHistories(Object.fromEntries(algorithmsList.map(a => [a, []])));
     setTurns(0);
     setLocked(false);
-    const newArmNames =
-      armsCount === musicGenres.length ? [...musicGenres] : pickRandomGenres(armsCount);
-    setArmNames(newArmNames);
-    setProbabilities(generateProbabilities(armsCount));
     setFeedback(null);
     setUserLog([]);
+    setProbKey(k => k + 1); 
   };
 
   const hardResetArms = count => {
@@ -122,12 +131,12 @@ export default function BernoulliBanditUI() {
     const newArmNames = safe === musicGenres.length ? [...musicGenres] : pickRandomGenres(safe);
     setArmsCount(safe);
     setArmNames(newArmNames);
-    setProbabilities(generateProbabilities(safe));
     setHistories(Object.fromEntries(algorithmsList.map(a => [a, []])));
     setTurns(0);
     setLocked(false);
     setFeedback(null);
     setUserLog([]);
+    setProbKey(k => k + 1); 
   };
 
   const algoSummary = useMemo(() => {
@@ -141,6 +150,8 @@ export default function BernoulliBanditUI() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [histories, armsCount]);
 
+  const probabilities = bandit.getProbabilities();
+
   return (
     <section className="bandit-dashboard">
       <div className="bandit-shell">
@@ -148,11 +159,11 @@ export default function BernoulliBanditUI() {
           <h2>Bernoulli-Bandit</h2>
           <p className="intro">
             Hier entscheidet ein einfaches „Ja“ oder „Nein“. Jedes Genre hat eine feste
-            Wahrscheinlichkeit, dass es dir gefällt (Treffer = 1) oder du es überspringst (Kein
-            Treffer = 0). Diese Variante modelliert binäre Entscheidungen – also Situationen, in
-            denen das Ergebnis nur Erfolg oder Misserfolg kennt.
+            Wahrscheinlichkeit, dass es dir gefällt (Treffer = 1) oder du es überspringst (0).
+            Alle Algorithmen spielen gegen dieselbe „wahre“ Wahrscheinlichkeit.
           </p>
         </header>
+
         <main className="main">
           <div className="left-col">
             <div className="control-panel block">
