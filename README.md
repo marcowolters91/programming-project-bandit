@@ -1,4 +1,4 @@
-[![CI - Build Status](https://github.com/marcowolters91/programming-project-bandit/actions/workflows/ci.yml/badge.svg)](https://github.com/marcowolters91/programming-project-bandit/actions/workflows/ci.yml)
+[![CI - Build Status](https://github.com/marcowolters91/programming-project-bandit/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/marcowolters91/programming-project-bandit/actions/workflows/ci-cd.yml)
 [![codecov](https://codecov.io/gh/marcowolters91/programming-project-bandit/branch/main/graph/badge.svg)](https://codecov.io/gh/marcowolters91/programming-project-bandit)
 
 # Multi-Armed Bandit – Spotify Genre Optimizer
