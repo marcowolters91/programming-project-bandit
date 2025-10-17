@@ -32,7 +32,8 @@ export default function BernoulliBanditUI() {
 
   const [probKey, setProbKey] = useState(0);
 
-  const bandit = useMemo(() => new BernoulliBandit(armNames), [armNames, probKey]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+const bandit = useMemo(() => new BernoulliBandit(armNames), [armNames, probKey]);
 
   const [histories, setHistories] = useState(Object.fromEntries(algorithmsList.map(a => [a, []])));
 
