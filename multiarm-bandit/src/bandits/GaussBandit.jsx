@@ -65,6 +65,12 @@ export default function GaussBandit() {
 
   const handleNextRound = () => {
     if (reachedMax) return;
+    const randomUserIndex = Math.floor(Math.random() * banditUser.strategies.length);
+    const rewardUser = banditUser.pull(randomUserIndex);
+    setUserHistory(prev => [
+      ...prev,
+      { turn: turns + 1, strategyIndex: randomUserIndex, reward: rewardUser },
+    ]);
     pullGreedyOnce();
     pullEpsilonOnce();
     setTurns(t => t + 1);
