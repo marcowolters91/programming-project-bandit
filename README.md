@@ -157,6 +157,7 @@ Die Qualität des Codes wird über mehrere Mechanismen sichergestellt:
 ### 1. **Code Coverage**
 Misst, wie viel Prozent des Codes durch Tests abgedeckt sind.  
 Ein hoher Coverage-Wert bedeutet, dass viele Codepfade getestet wurden.  
+
 ---
 
 ### 2. **E2E-Tests (End-to-End)**
