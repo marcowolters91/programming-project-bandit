@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-results
-          path: multiarm-bandit/test-results
+          path: multiarm-bandit/coverage/e2e-results
 
   CD-deploy:
     needs: [CI-Build-and-Test, E2E-Test]
