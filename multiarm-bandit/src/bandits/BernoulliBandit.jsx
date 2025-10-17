@@ -34,9 +34,7 @@ export default function BernoulliBanditUI() {
 
   const bandit = useMemo(() => new BernoulliBandit(armNames), [armNames, probKey]);
 
-  const [histories, setHistories] = useState(
-    Object.fromEntries(algorithmsList.map(a => [a, []]))
-  );
+  const [histories, setHistories] = useState(Object.fromEntries(algorithmsList.map(a => [a, []])));
 
   const getStats = algorithm => {
     const data = histories[algorithm];
@@ -123,7 +121,7 @@ export default function BernoulliBanditUI() {
     setLocked(false);
     setFeedback(null);
     setUserLog([]);
-    setProbKey(k => k + 1); 
+    setProbKey(k => k + 1);
   };
 
   const hardResetArms = count => {
@@ -136,7 +134,7 @@ export default function BernoulliBanditUI() {
     setLocked(false);
     setFeedback(null);
     setUserLog([]);
-    setProbKey(k => k + 1); 
+    setProbKey(k => k + 1);
   };
 
   const algoSummary = useMemo(() => {
@@ -159,8 +157,8 @@ export default function BernoulliBanditUI() {
           <h2>Bernoulli-Bandit</h2>
           <p className="intro">
             Hier entscheidet ein einfaches „Ja“ oder „Nein“. Jedes Genre hat eine feste
-            Wahrscheinlichkeit, dass es dir gefällt (Treffer = 1) oder du es überspringst (0).
-            Alle Algorithmen spielen gegen dieselbe „wahre“ Wahrscheinlichkeit.
+            Wahrscheinlichkeit, dass es dir gefällt (Treffer = 1) oder du es überspringst (0). Alle
+            Algorithmen spielen gegen dieselbe „wahre“ Wahrscheinlichkeit.
           </p>
         </header>
 

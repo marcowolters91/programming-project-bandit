@@ -3,8 +3,9 @@ export default class BernoulliBandit {
     this.armNames = [...armNames];
     this.K = this.armNames.length;
 
-    this.probabilities = Array.from({ length: this.K }, () =>
-      Math.round((Math.random() * 0.9 + 0.05) * 100) / 100
+    this.probabilities = Array.from(
+      { length: this.K },
+      () => Math.round((Math.random() * 0.9 + 0.05) * 100) / 100
     );
   }
 
