@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-const SLOW_MODE = true;  // true = sichtbar und langsam, false = normal/CI
-const STEP_DELAY = 800;  // ms zwischen den einzelnen Aktionen
+const SLOW_MODE = true; // true = sichtbar und langsam, false = normal/CI
+const STEP_DELAY = 800; // ms zwischen den einzelnen Aktionen
 
 // Hilfsfunktion für Delay
 const pause = (ms: number) => new Promise(res => setTimeout(res, ms));
@@ -15,7 +15,9 @@ test.describe('Multiarm Bandit – Vollintegration', () => {
       testInfo.annotations.push({ type: 'mode', description: 'Slow-Mode aktiv' });
     }
 
-    const maybePause = async () => { if (SLOW_MODE) await pause(STEP_DELAY); };
+    const maybePause = async () => {
+      if (SLOW_MODE) await pause(STEP_DELAY);
+    };
 
     // 1: App öffnen
     await page.goto('http://localhost:5173');
@@ -37,10 +39,13 @@ test.describe('Multiarm Bandit – Vollintegration', () => {
     }
 
     // prüfen, dass der Counter wirklich 3 erreicht hat
-    await page.waitForFunction(() => {
-    const el = document.body.innerText.match(/Gespielte Runden:\s*3/);
-    return !!el;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const el = document.body.innerText.match(/Gespielte Runden:\s*3/);
+        return !!el;
+      },
+      { timeout: 10000 }
+    );
 
     // 4: Wechsele zum Gauss-Bandit
     await page.getByRole('button', { name: /Gauss/i }).click();
