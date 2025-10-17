@@ -36,12 +36,11 @@ In dieser Variante werden die Genres als **Arme des Banditen** dargestellt – j
 - **0:** Kein Treffer – Das Genre wird geskippt.
 
 Die Regeln sind einfach:  
-Wähle, höre und bewerte – aber aufgepasst: **es geht auf Zeit!**  
-Nur wer schnell und klug entscheidet, findet das aktuell **beliebteste Genre**.  
+Nur wer klug entscheidet, findet das aktuell **beliebteste Genre**.  
 
 Doch sei gewarnt:  
 Du bist **nicht allein im Spiel** – deine Gegner sind unsichtbar, aber aktiv.  
-Ihr alle wetteifert darum, den optimalen Musiktrend zuerst zu entdecken!
+Ihr alle wetteifert darum, den optimalen Musiktrend zuerst zu entdecken.
 
 ---
 
@@ -55,13 +54,32 @@ So wird erkennbar, **welche Strategie langfristig die beste Balance zwischen Ris
 
 ---
 
-## Technologien
+## Systemanforderungen
 
-- **React (Vite)** – Frontend-Framework zur Darstellung und Interaktion  
-- **Vitest** – Testing Framework für Unit- und Integrationstests  
-- **Linter + Prettier** – Codequalität & Formatierung  
-- **GitHub Actions** – Continuous Integration (CI) mit automatisierten Tests  
-- **Codecov** – Testabdeckung und Qualitätsanalyse  
+Zur Nutzung oder Entwicklung werden folgende Systemvoraussetzungen empfohlen:
+
+| Komponente | Mindestanforderung | Empfehlung |
+|-------------|--------------------|-------------|
+| **Betriebssystem** | Windows 10 / macOS 12 / Linux | Aktuelle Version mit Node.js-Unterstützung |
+| **Node.js** | v18.x oder höher | v20.x |
+| **npm** | v9 oder höher | Automatisch mit Node installiert |
+| **RAM** | 4 GB | 8 GB oder mehr |
+| **Browser** | Chrome, Edge, Firefox oder Safari (aktuell) | Chrome für E2E-Tests empfohlen |
+
+> Hinweis:  
+> Bei der Nutzung der E2E-Tests muss der **Browsertyp manuell angepasst werden**, wenn kein Chrome verwendet wird (siehe Abschnitt *Qualitätssicherung*).
+
+---
+
+## Alternative Nutzung über GitHub Pages
+
+Das Projekt kann **direkt im Browser** ausgeführt werden – ohne lokale Installation.  
+Über folgenden Link gelangst du zur Live-Demo:
+
+**[https://marcowolters91.github.io/programming-project-bandit/](https://marcowolters91.github.io/programming-project-bandit/)**
+
+Die GitHub Pages-Version wird bei jedem erfolgreichen Build automatisch aktualisiert.  
+Daher entspricht die dort laufende Anwendung stets dem **aktuellen Stand der Main-Branch**.
 
 ---
 
@@ -96,57 +114,70 @@ So wird erkennbar, **welche Strategie langfristig die beste Balance zwischen Ris
 
 ---
 
-## Funktionsweise
+## Pipeline & Automatisierung
 
-Das System implementiert mehrere **Bandit-Strategien** zur Optimierung der Musikempfehlungen:
+Das Projekt nutzt **GitHub Actions** als Continuous Integration (CI)-Pipeline.  
+Bei jedem Push oder Pull Request wird automatisch eine Reihe von Schritten ausgeführt:
 
-- **Greedy-Algorithmus** – Wählt immer das aktuell beste Genre  
-- **Epsilon-Greedy** – Erkundet gelegentlich neue Genres  
-- **Upper Confidence Bound (UCB)** – Balanciert Risiko und Belohnung  
-- **Thompson Sampling** – Wahrscheinlichkeitsbasiertes Lernen  
-
-Diese Strategien werden in Simulationen verglichen.  
-Das Frontend visualisiert die Lernprozesse – z. B.:
-- Häufigkeit der Genre-Auswahl  
-- Durchschnittliche Belohnung  
-- Lernkurven und Konvergenzverhalten  
-
-So kann beobachtet werden, **wie jede Strategie mit der Zeit „intelligenter“ wird**.
-
----
-
-## Tests ausführen
-
-Das Projekt nutzt **Vitest** für automatisierte Tests und Coverage-Berichte.
-
-```bash
-npm run coverage
-```
-
-Testberichte (Coverage) werden automatisch im Terminal ausgegeben.
+1. **Linter-Check:**  
+   Prüft, ob der Code den definierten Stil- und Syntaxregeln entspricht.  
+2. **Prettier-Formatierung:**  
+   Vereinheitlicht automatisch den Code-Stil für bessere Lesbarkeit.  
+3. **Unit-Tests & Coverage (Vitest):**  
+   Führt alle Tests aus und überprüft die Testabdeckung.  
+4. **Build-Schritt:**  
+   Baut das Projekt für die Bereitstellung.  
+5. **Deployment (optional):**  
+   Erfolgreiche Builds werden über GitHub Pages veröffentlicht.  
+6. **Coverage-Upload:**  
+   Ergebnisse werden an [![codecov](https://codecov.io/gh/marcowolters91/programming-project-bandit/branch/main/graph/badge.svg)](https://codecov.io/gh/marcowolters91/programming-project-bandit) gesendet.
 
 ---
 
-## Continuous Integration
+## Prettier & ESLint
 
-Das Repository enthält eine **GitHub Actions Workflow-Datei** (`.github/workflows/ci.yml`),  
-die bei jedem Push automatisch:
+**Prettier** und **ESLint** sind feste Bestandteile der Codequalitätssicherung.
 
-1. Den Code lintet  
-2. Den Code mit Prettier formatiert  
-3. Die Tests mit Vitest ausführt  
-4. Einen Build erstellt  
-5. Die Testabdeckung an Codecov übermittelt  
+- **Prettier:**  
+  Formatiert den Code automatisch – gleiche Einrückungen, Klammern, Zeilenumbrüche usw.  
+  → Ziel: Einheitlicher Stil unabhängig von IDE oder Entwickler.
+
+- **ESLint:**  
+  Überprüft den Code auf Fehler, Anti-Patterns und mögliche Bugs.  
+  → Ziel: Frühzeitige Erkennung von Syntax- und Logikfehlern.
+
+Diese Tools laufen sowohl lokal (`npm run lint`, `npm run format`) als auch automatisch über die CI-Pipeline.  
 
 ---
 
-## Erweiterungsmöglichkeiten (Ausblick)
+## Qualitätssicherung
 
-- Integration echter **Spotify-APIs** zur Auswertung von Hörgewohnheiten  
-- Verwendung von **realen Feedbackdaten** statt Simulation  
-- Erweiterung um **personalisierte Nutzerprofile**  
-- Interaktive **Lernvisualisierung** mit Zeitlimit oder Scoreboard  
+Die Qualität des Codes wird über mehrere Mechanismen sichergestellt:
 
+### 1. **Code Coverage**
+Misst, wie viel Prozent des Codes durch Tests abgedeckt sind.  
+Ein hoher Coverage-Wert bedeutet, dass viele Codepfade getestet wurden.  
+---
+
+### 2. **E2E-Tests (End-to-End)**
+E2E-Tests prüfen die Anwendung als Ganzes — vom Frontend bis zur Benutzerinteraktion.
+
+> Hinweis:  
+> Der Browser muss im Test-Setup angepasst werden.  
+> Standardmäßig läuft der Test über **Chrome**.  
+> Falls ein anderer Browser (z. B. Firefox oder Safari) verwendet wird,  
+> muss dieser in der Testkonfiguration angegeben werden:
+---
+
+### 3. **Pipeline-Checks**
+Die CI-Pipeline fungiert als letzte Schutzschicht:  
+Nur wenn alle Tests, Linter und Builds erfolgreich durchlaufen,  
+wird ein Commit in den Hauptbranch übernommen oder ein Deployment ausgelöst.
+
+Diese Kombination sorgt für:
+- **Stabilen Codefluss**
+- **Frühzeitige Fehlererkennung**
+- **Automatische Rückmeldung an Entwickler**
 ---
 
 ## Team & Projektmanagement
@@ -154,13 +185,3 @@ die bei jedem Push automatisch:
 - Hochschule Osnabrück – Modul *Programmierprojekt (5. Semester)*  
 - Projektorganisation über GitHub (Issues, Pull Requests, CI)  
 - Kommunikation über MS Teams & Jira  
-
----
-
-## Lizenz
-
-Dieses Projekt ist **Open Source** und ausschließlich zu **Lern- und Demonstrationszwecken** gedacht.
-
----
-
-© 2025 Hochschule Osnabrück – Multi-Armed Bandit Projekt
