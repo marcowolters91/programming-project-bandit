@@ -12,7 +12,7 @@ import { posterior } from '../functions/posterior';
 import { ProbabilityChart } from '../diagrams/probabilityChart.jsx';
 import { AlgorithmHitsChart } from '../diagrams/algorithmHitsChart.jsx';
 
-import { musicGenres } from '../bandits/MusicGenres.js';
+import { musicGenres } from '../assets/MusicGenres.js';
 
 function pickRandomGenres(n) {
   const shuffled = [...musicGenres].sort(() => 0.5 - Math.random());
