@@ -7,7 +7,7 @@ import UserGreedyTrend from '../diagrams/algorithmTrendChart';
 
 import { greedy } from '../functions/greedy.js';
 import { epsilonGreedy } from '../functions/epsilonGreedy.js';
-import { musicGenres } from '../bandits/MusicGenres.js';
+import { musicGenres } from '../assets/MusicGenres.js';
 
 function pickRandomGenres(n) {
   const shuffled = [...musicGenres].sort(() => 0.5 - Math.random());
