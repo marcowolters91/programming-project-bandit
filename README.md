@@ -165,14 +165,14 @@ E2E-Tests prüfen die Anwendung als Ganzes — vom Frontend bis zur Benutzerinte
 
 Hinweis:
 Bevor die Tests ausgeführt werden, müssen die benötigten Browser-Binaries installiert werden:
-
+```bash
 npx playwright install --with-deps
-
+```
 
 Anschließend können die Tests gestartet werden:
-
+```bash
 npx playwright test --headed
-
+```
 
 Der Parameter --headed sorgt dafür, dass der Testlauf sichtbar im Browserfenster ausgeführt wird.
 Das ist insbesondere hilfreich, um Fehler oder unerwartetes Verhalten direkt zu beobachten.
