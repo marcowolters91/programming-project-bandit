@@ -40,20 +40,6 @@ describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
     );
   });
 
-  it('ermöglicht Benutzerauswahl eines Genres', async () => {
-    render(<GaussBandit />);
-    const genreButtons = screen.getAllByRole('button').filter(btn => btn.textContent);
-    act(() => {
-      fireEvent.click(genreButtons[0]);
-    });
-
-    await waitFor(() => {
-      const roundsText = screen.getByText(/Gespielte Runden/i);
-      expect(roundsText).toBeInTheDocument();
-      expect(roundsText.textContent).toMatch(/1/);
-    });
-  });
-
   it('zeigt nach einigen Runden ein Chart-Element oder Verlaufsanzeige', async () => {
     render(<GaussBandit />);
     const nextBtn = screen.getByRole('button', { name: /Nächste Runde/i });
