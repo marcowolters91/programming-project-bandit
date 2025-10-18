@@ -4,12 +4,12 @@ function normalPDF(x, mu, sigma) {
   return (1 / (sigma * Math.sqrt(2 * Math.PI))) * Math.exp(-0.5 * Math.pow((x - mu) / sigma, 2));
 }
 
-export default function NormalDistributionChart({ strategies, counts, bandit }) {
+export default function NormalDistributionChart({ bandit }) {
   const xMin = 0;
   const xMax = 35;
   const step = 0.2;
 
-  const chartsData = bandit.strategies.map((s, i) => {
+  const chartsData = bandit.strategies.map((s) => {
     const points = [];
     for (let x = xMin; x <= xMax; x += step) {
       points.push({
@@ -59,7 +59,7 @@ export default function NormalDistributionChart({ strategies, counts, bandit }) 
             key={i}
             type="monotone"
             dataKey={s.name}
-            name={s.name}
+            name={s.name.slice(2)}
             stroke={`hsl(${i * (360 / bandit.strategies.length)}, 70%, 50%)`}
             strokeWidth={2}
             dot={false}
