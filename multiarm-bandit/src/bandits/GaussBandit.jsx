@@ -102,18 +102,19 @@ export default function GaussBandit() {
           <h2>Gauss-Bandit</h2>
           <p className="intro">
             Beim Gauss-Bandit ist der Reward nicht nur 0 oder 1, sondern ein kontinuierlicher Wert –
-            In unserem Fall die Hörzeit in einem bestimmten Genre. Die Ergebnisse folgen einer Gauß’schen
-            Normalverteilung, wodurch auch kleine Unterschiede zwischen Strategien sichtbar werden.
-            Damit lassen sich feinere Abstufungen und realistischere Nutzerreaktionen darstellen.
+            In unserem Fall die Hörzeit in einem bestimmten Genre. Die Ergebnisse folgen einer
+            Gauß’schen Normalverteilung, wodurch auch kleine Unterschiede zwischen Strategien
+            sichtbar werden. Damit lassen sich feinere Abstufungen und realistischere
+            Nutzerreaktionen darstellen.
           </p>
           <p className="intro">
-            Zur Erklärung: Es wird angenommen, dass die Hörzeit in einem Genre zwischen einer und 30 Minuten
-            liegen kann. Hörzeiten und deren Abweichungen werden dynamisch erzeugt.
+            Zur Erklärung: Es wird angenommen, dass die Hörzeit in einem Genre zwischen einer und 30
+            Minuten liegen kann. Hörzeiten und deren Abweichungen werden dynamisch erzeugt.
           </p>
           <p className="intro">
-            Unterhalb dieser Beschreibung können auf der linken Seite Simulationseinstellungen vorgenommen
-            werden. Die Ergebnisse finden sich auf der rechten Seite. Einige Ergebnisse werden auch erst
-            mit dem Erreichen der eingestellten Anzahl an Runden dargestellt.
+            Unterhalb dieser Beschreibung können auf der linken Seite Simulationseinstellungen
+            vorgenommen werden. Die Ergebnisse finden sich auf der rechten Seite. Einige Ergebnisse
+            werden auch erst mit dem Erreichen der eingestellten Anzahl an Runden dargestellt.
           </p>
         </header>
 
