@@ -69,8 +69,7 @@ describe('GaussBandit – Integrationstest (epsilon-greedy)', () => {
 
         // Prüfe, ob Chart oder Verlauf vorhanden ist
         const hasChart =
-          screen.queryByText(/Keine Verlaufsdaten vorhanden/i) === null ||
-          chartBoxes.length >= 2;
+          screen.queryByText(/Keine Verlaufsdaten vorhanden/i) === null || chartBoxes.length >= 2;
         expect(hasChart).toBe(true);
       },
       { timeout: 10000 }
