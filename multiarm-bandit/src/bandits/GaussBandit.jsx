@@ -204,13 +204,12 @@ export default function GaussBandit() {
               <p>
                 Gespielte Runden: {turns} / {maxTurns}
               </p>
-
               <table>
                 <thead>
                   <tr>
                     <th>Strategie</th>
                     <th>Anzahl Züge</th>
-                    <th>Durchschnittliche Hörzeit</th>
+                    {reachedMax && <th>Durchschnittliche Hörzeit</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -218,12 +217,14 @@ export default function GaussBandit() {
                     <tr key={i}>
                       <td>{strategyNames[i]}</td>
                       <td>{banditUser.counts[i]}</td>
-                      <td>
-                        {banditUser.counts[i]
-                          ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
-                          : '0.00'}{' '}
-                        min
-                      </td>
+                      {reachedMax && (
+                        <td>
+                          {banditUser.counts[i]
+                            ? (banditUser.sumRewards[i] / banditUser.counts[i]).toFixed(2)
+                            : '0.00'}{' '}
+                          min
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
