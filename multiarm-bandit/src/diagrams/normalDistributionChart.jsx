@@ -9,7 +9,7 @@ export default function NormalDistributionChart({ bandit }) {
   const xMax = 35;
   const step = 0.2;
 
-  const chartsData = bandit.strategies.map((s) => {
+  const chartsData = bandit.strategies.map(s => {
     const points = [];
     for (let x = xMin; x <= xMax; x += step) {
       points.push({
