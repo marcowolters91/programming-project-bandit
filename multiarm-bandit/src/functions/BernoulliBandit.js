@@ -9,7 +9,7 @@ export default class BernoulliBandit {
     );
 
     if (typeof window === 'undefined') {
-    console.warn('Running in non-browser environment');
+      console.warn('Running in non-browser environment');
     }
   }
 
