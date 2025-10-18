@@ -5,39 +5,35 @@ function normalPDF(x, mu, sigma) {
 }
 
 export default function NormalDistributionChart({ strategies, counts, bandit }) {
-  const chartsData = strategies
-    .map((s, i) => {
-      const { mean, sigma } = bandit.strategies[i];
-      if (!counts[i] || counts[i] === 0) return null;
+  const xMin = 0;
+  const xMax = 35;
+  const step = 0.2;
 
-      const points = [];
-      for (let x = mean - 3 * sigma; x <= mean + 3 * sigma; x += sigma / 20) {
-        points.push({
-          x: parseFloat(x.toFixed(2)),
-          [s.name]: normalPDF(x, mean, sigma),
-        });
-      }
-      return points;
-    })
-    .filter(Boolean);
-
-  if (chartsData.length === 0) {
-    return <p>Keine Daten für Normalverteilung vorhanden.</p>;
-  }
+  const chartsData = bandit.strategies.map((s, i) => {
+    const points = [];
+    for (let x = xMin; x <= xMax; x += step) {
+      points.push({
+        x: parseFloat(x.toFixed(2)),
+        [s.name]: normalPDF(x, s.mean, s.sigma),
+      });
+    }
+    return points;
+  });
 
   const mergedData = [];
-  const maxLen = Math.max(...chartsData.map(d => d.length));
-  for (let j = 0; j < maxLen; j++) {
-    const row = {};
+  const len = chartsData[0]?.length || 0;
+  for (let i = 0; i < len; i++) {
+    const row = { x: chartsData[0][i].x };
     chartsData.forEach(strategyData => {
-      if (strategyData[j]) {
-        Object.keys(strategyData[j]).forEach(key => {
-          if (key === 'x') row.x = strategyData[j].x;
-          else row[key] = strategyData[j][key];
-        });
-      }
+      Object.keys(strategyData[i]).forEach(key => {
+        if (key !== 'x') row[key] = strategyData[i][key];
+      });
     });
     mergedData.push(row);
+  }
+
+  if (mergedData.length === 0) {
+    return <p>Keine Daten für Normalverteilung vorhanden.</p>;
   }
 
   return (
@@ -50,23 +46,25 @@ export default function NormalDistributionChart({ strategies, counts, bandit }) 
         margin={{ top: 20, right: 30, left: 30, bottom: 60 }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="x" />
+        <XAxis dataKey="x" type="number" domain={[xMin, xMax]} />
         <YAxis />
         <Tooltip />
-        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ marginTop: 25 }} />
-        {strategies.map((s, i) =>
-          counts[i] > 0 ? (
-            <Line
-              key={i}
-              type="monotone"
-              dataKey={s.name}
-              name={s.name.slice(2)}
-              stroke={`hsl(${i * 90}, 70%, 50%)`}
-              strokeWidth={2}
-              dot={false}
-            />
-          ) : null
-        )}
+        <Legend
+          verticalAlign="bottom"
+          align="center"
+          wrapperStyle={{ marginTop: 25, whiteSpace: 'nowrap' }}
+        />
+        {bandit.strategies.map((s, i) => (
+          <Line
+            key={i}
+            type="monotone"
+            dataKey={s.name}
+            name={s.name}
+            stroke={`hsl(${i * (360 / bandit.strategies.length)}, 70%, 50%)`}
+            strokeWidth={2}
+            dot={false}
+          />
+        ))}
       </LineChart>
     </div>
   );
