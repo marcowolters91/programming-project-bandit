@@ -17,6 +17,11 @@ export default function BanditApp() {
         Hier erfährst du, wie Entscheidungsstrategien hinter modernen Empfehlungssystemen
         funktionieren – vom Zufall bis zur optimalen Auswahl!
       </h4>
+      <h4>
+        Jeder hat ein Musikgenre, das im Moment besonders angesagt ist. Doch Geschmäcker 
+        ändern sich – vielleicht entdeckst du bald einen neuen Favoriten! Hier kannst du herausfinden, 
+        welches Genre aktuell am beliebtesten ist und die meisten Hörstunden verzeichnet. 
+      </h4>
 
       <nav
         className="bandit-tabs"
