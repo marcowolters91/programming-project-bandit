@@ -7,6 +7,10 @@ export default class BernoulliBandit {
       { length: this.K },
       () => Math.round((Math.random() * 0.9 + 0.05) * 100) / 100
     );
+
+    if (typeof window === 'undefined') {
+    console.warn('Running in non-browser environment');
+    }
   }
 
   pull(armIndex) {
@@ -27,5 +31,11 @@ export default class BernoulliBandit {
 
   getArmNames() {
     return [...this.armNames];
+  }
+
+  debugInfo() {
+    if (typeof window !== 'undefined' && window.DEBUG_BANDIT) {
+      console.info('Aktuelle Wahrscheinlichkeiten:', this.probabilities);
+    }
   }
 }
