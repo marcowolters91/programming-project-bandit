@@ -47,7 +47,7 @@ Ihr alle wetteifert darum, den optimalen Musiktrend zuerst zu entdecken.
 ### Gaussian-Bandit
 
 Analysiere verschiedene Musikgenre-Strategien auf Basis einer **normalverteilten Reward-Struktur**.  
-Hier geht es nicht nur um Treffer oder Nieten, sondern um **graduelle Bewertungen** – wie viel hörzeit in einem Genre verbracht wird.  
+Hier geht es nicht nur um Treffer oder Nieten, sondern um **graduelle Bewertungen** – wie viel Hörzeit in einem Genre verbracht wird.  
 
 Das Modell erlaubt feinere Nuancen und eignet sich ideal, um Unterschiede zwischen ähnlichen Genres zu erfassen.  
 So wird erkennbar, **welche Strategie langfristig die beste Balance zwischen Risiko und Belohnung** liefert.
