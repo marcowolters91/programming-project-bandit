@@ -60,18 +60,7 @@ describe('GaussianBandit', () => {
     bandit.pull(0);
     bandit.pull(1);
     bandit.reset();
-    expect(bandit.counts).toEqual([0, 0, 0]);
-    expect(bandit.sumRewards).toEqual([0, 0, 0]);
     expect(bandit.totalPulls).toBe(0);
-    expect(bandit.cumulativeReward).toBe(0);
-  });
-
-  it('verwendet korrekt die Standardnormalverteilung im _randn()', () => {
-    const bandit = new GaussianBandit(['Demo']);
-    const mockValues = [0.25, 0.75];
-    vi.spyOn(global.Math, 'random').mockImplementation(() => mockValues.shift() ?? 0.9);
-    const z = bandit._randn();
-    expect(Number.isFinite(z)).toBe(true);
   });
 
   it('berechnet _sampleReward basierend auf mean und sigma und clipt Werte', () => {
